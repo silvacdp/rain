@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getAllArticles } from '../lib/airtable';
+
+const articles = await getAllArticles();
+---
+
+<Layout title="Articles">
+  <main>
+    <h1>Articles</h1>
+    <div class="articles-grid">
+      {articles.map(article => (
+        <article class="article-card">
+          <div class="post-type">{article.postType}</div>
+          <h2><a href={`/articles/${article.slug}`}>{article.header}</a></h2>
+          <a href={article.originalLink} class="original-link">View Original</a>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+
+  .article-card {
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+  }
+
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .original-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #4f46e5;
+    text-decoration: none;
+  }
+
+  .original-link:hover {
+    text-decoration: underline;
+  }
+</style>
