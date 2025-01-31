@@ -7,14 +7,23 @@ const articles = await getAllArticles();
 
 <Layout title="Articles">
   <main>
-    <h1>Articles</h1>
     <div class="articles-grid">
       {articles.map(article => (
+        <a href={`/posts/${article.slug}`}>
         <article class="article-card">
-          <div class="post-type">{article.postType}</div>
-          <h2><a href={`/articles/${article.slug}`}>{article.header}</a></h2>
-          <a href={article.originalLink} class="original-link">View Original</a>
+          <h2>{article.header}</h2>
+          <div class="post-type">{article.postType}</div> &bull; {article.publishedAt.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })}
+         {article.images?.length > 0 && (
+            <img src={article.images[0].thumbnails.large?.url} alt={article.header} class="article-thumbnail" loading="lazy" />
+          )}
+
+        <p set:html={article.shortDescription}></p>
         </article>
+      </a>
       ))}
     </div>
   </main>
@@ -33,6 +42,15 @@ const articles = await getAllArticles();
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     padding: 2rem 0;
+  }
+
+  .articles-grid a {
+    color: #353338;
+  }
+
+
+  .articles-grid p {
+    line-height: 1.5;
   }
 
   .article-card {
