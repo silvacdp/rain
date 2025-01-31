@@ -89,7 +89,7 @@ const firstImage = article.images && article.images.length > 0
     margin: auto;
     padding: 1rem;
     width: 800px;
-    max-width: calc(100% - 2rem);
+    max-width: calc(100% - 1rem);
   }
 
   .article {
@@ -97,6 +97,11 @@ const firstImage = article.images && article.images.length > 0
     padding: 2rem 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    @media (max-width: 800px) {
+      box-shadow: none;
+      padding: 0;
+    }
   }
 
   .post-type {
