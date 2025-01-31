@@ -18,7 +18,7 @@ const articles = await getAllArticles();
         day: 'numeric'
       })}
          {article.images?.length > 0 && (
-            <img src={article.images[0].thumbnails.large?.url} alt={article.header} class="article-thumbnail" loading="lazy" />
+            <img src={article.images[0].thumbnails.large?.url} width={article.images[0].thumbnails.large?.width} height={article.images[0].thumbnails.large?.height} alt={article.header} class="article-thumbnail" loading="lazy" />
           )}
 
         <p set:html={article.shortDescription}></p>
@@ -41,7 +41,7 @@ const articles = await getAllArticles();
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    padding: 2rem 0;
+    padding: 1rem 0;
   }
 
   .articles-grid a {

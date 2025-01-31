@@ -1,14 +1,30 @@
 <script lang="ts">
   // Define the shape of your image attachments.
   // Extend this if you need additional properties (e.g., filename, thumbnails).
-  export interface ImageAttachment {
-    id: string;
-    url: string;
-    filename?: string;
-    type?: string;
-    size?: number;
-    // Add more fields if needed, e.g. thumbnails, etc.
-  }
+  interface ImageAttachment {
+  id: string;
+  url: string;
+  filename: string;
+  type: string;
+  size: number;
+  thumbnails?: {
+    small?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+    large?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+    full?: {
+      url: string;
+      width: number;
+      height: number;
+    };
+  };
+}
 
   // The component receives an array of images as a prop.
   export let images: ImageAttachment[] = [];
@@ -63,7 +79,7 @@
 {#if hasSingleImage}
   <!-- If there's only one image, show a simple, full-size image. -->
   <div class="single-image-container">
-    <img src={images[0].url} alt={images[0].filename} />
+    <img src={images[0].thumbnails.large?.url} alt={images[0].filename} />
   </div>
 {:else if images.length > 1}
   <!-- Otherwise, display a scrollable slider with navigation arrows. -->
@@ -71,11 +87,7 @@
     <div class="slider" bind:this={slider} on:scroll={handleScroll}>
       {#each images as image, i}
         <div class="slide">
-          <!-- 
-            You could display additional info here 
-            (e.g. image.filename or thumbnails) 
-          -->
-          <img src={image.url} alt={image.filename} />
+          <img src={image.thumbnails.large?.url} loading="lazy" alt={image.filename} width={image.thumbnails.large?.width} height={image.thumbnails.large?.height} />
         </div>
       {/each}
     </div>
@@ -112,7 +124,6 @@
   </div>
 {:else}
   <!-- Edge case: No images -->
-  <p>No images to display.</p>
 {/if}
 
 <style>
