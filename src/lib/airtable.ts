@@ -1,8 +1,8 @@
-const apiKey = import.meta.env.AIRTABLE_API_KEY;
-const baseId = import.meta.env.AIRTABLE_BASE_ID;
+const apiKey = process.env.AIRTABLE_API_KEY;
+const baseId = process.env.AIRTABLE_BASE_ID;
 
 if (!apiKey || !baseId) {
-  throw new Error('Missing Airtable credentials');
+  throw new Error('Missing Airtable Credentials');
 }
 
 const base = new Airtable({ apiKey }).base(baseId);
