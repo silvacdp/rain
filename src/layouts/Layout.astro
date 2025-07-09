@@ -19,6 +19,9 @@ const { title } = Astro.props;
 	<body>
     <nav class="navbar" aria-label="Profile navigation">
       <div class="container">
+	<div class="profile-info">
+  	  <h1 class="profile-name">More Rain</h1>
+	</div>
   	<ul>
     	  <li><a href="/">Home</a></li>
     	  <li><a href="/category1">Category 1</a></li>
@@ -114,7 +117,7 @@ const { title } = Astro.props;
 
 .navbar a:hover {
   border-color: var(--platinum);
-  background-color: var(--white);
+  background-color: var(--platinum);
 }
 
 .container {
