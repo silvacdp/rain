@@ -1,3 +1,13 @@
+const apiKey = import.meta.env.AIRTABLE_API_KEY;
+const baseId = import.meta.env.AIRTABLE_BASE_ID;
+
+if (!apiKey || !baseId) {
+  throw new Error('Missing Airtable credentials');
+}
+
+const base = new Airtable({ apiKey }).base(baseId);
+
+/*
 import Airtable from 'airtable';
 import { marked } from 'marked';
 
@@ -6,6 +16,7 @@ if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
 }
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
+*/
 
 // Define the structure of an image attachment as provided by Airtable
 export interface ImageAttachment {
