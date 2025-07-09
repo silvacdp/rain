@@ -19,17 +19,11 @@ const { title } = Astro.props;
 	<body>
     <nav class="navbar" aria-label="Profile navigation">
       <div class="container">
-        <!-- Left: Profile Section -->
-      <div class="profile-section">
-       
-        <div class="profile-info">
-          <!-- Bold name -->
-          <h2 class="profile-name">More Rain</h2>
-          <!-- Expertise labels -->
-          <div class="expertise">
-            <a href="/">All posts</span>
-          </div>
-        </div>
+  	<ul>
+    	  <li><a href="/">Home</a></li>
+    	  <li><a href="/category1">Category 1</a></li>
+    	  <li><a href="/about">About</a></li>
+  	</ul>
       </div>
   
     </nav>
@@ -60,18 +54,6 @@ const { title } = Astro.props;
 		--platinumrgb: 229, 229, 229;
 		--whitergb: 255, 255, 255;
 
-
-		/*
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-		*/
 		}
 	html {
 		font-family: system-ui, sans-serif;
@@ -127,155 +109,6 @@ a {
   color: rgb(var(--orangergb));
   font-weight: 500;
   text-decoration: none;
-}
-
-/* Profile Section */
-.profile-section {
-  display: flex;
-  align-items: center;
-}
-
-/* Profile Photo Container */
-.profile-photo {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: #f8ecc2; /* Soft beige/yellowish background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  margin-right: 1rem; /* Spacing between photo and info */
-}
-
-/* Profile Image */
-.profile-photo img {
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* Profile Info */
-.profile-info {
-  display: flex;
-  flex-direction: column;
-
-  @media (max-width: 800px) {
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-/* Profile Name */
-.profile-name {
-  font-size: 1.2rem;
-  font-weight: 700; /* Bold text */
-  margin-bottom: 0.25rem;
-  margin-top: 0;
-}
-
-/* Expertise Labels */
-.expertise span {
-  font-size: 0.9rem;
-  margin-right: 0.5rem;
-  color: #333;
-}
-
-/* Location & Social Icons Section */
-.location-and-social {
-  display: flex;
-  align-items: center;
-}
-
-/* Location Wrapper */
-.location {
-  display: flex;
-  align-items: center;
-  margin-right: 1.5rem;
-  gap: 8px;
-}
-
-/* Location Icon */
-.location-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 0.5rem;
-}
-
-/* Location Text */
-.location-text {
-  font-size: 0.9rem;
-  color: #333;
-}
-
-/* Social Icons List */
-.social-icons {
-  display: flex;
-  list-style: none;
-}
-
-/* Social Icons List Items */
-.social-icons li {
-  margin-left: 1rem; /* Spacing between icons */
-}
-
-/* Social Icon Links */
-.social-icons a {
-  display: inline-block;
-  transition: filter 0.2s ease-in-out;
-  /* By default, icons are black. If your SVGs are black,
-     no extra color styling is needed. */
-}
-
-/* Hover Effect: Darken icons */
-.social-icons a:hover {
-  filter: brightness(0.7);
-}
-
-/* ---------------------- */
-/* RESPONSIVE DESIGN      */
-/* ---------------------- */
-@media (max-width: 600px) {
-  .navbar {
-    flex-direction: column; /* Stack vertically */
-    align-items: flex-start;
-  }
-
-  .profile-section,
-  .location-and-social {
-    margin: 0.5rem 0; /* Vertical spacing */
-    width: 100%;
-    justify-content: center;
-  }
-
-  .profile-section {
-    flex-direction: column;
-  }
-
-  .profile-photo {
-    margin-right: 0; /* Remove horizontal margin for center alignment */
-    margin-bottom: 0.5rem;
-  }
-
-  .location-and-social {
-    flex-direction: column;
-  }
-
-  .location {
-    margin-right: 0;
-    margin-bottom: 0.5rem;
-  }
-  
-  .social-icons {
-    justify-content: center;
-  }
-}
-
-.location-and-social {
-  @media (max-width: 800px) {
-    display: none;
-  }
 }
 
 footer {
