@@ -65,6 +65,7 @@ export interface Article {
 }
 
 export async function getAllArticles(): Promise<Article[]> {
+  const base = getBase(); 
   const records = await base('Articles').select().all();
 
   return records.map(record => {
