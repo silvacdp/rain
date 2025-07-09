@@ -60,6 +60,12 @@ const { title } = Astro.props;
 		/* background: #13151a; */
     color: var(--white);
 	}
+  
+  .profile-name {
+    font-size: 2rem; /* bigger */
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
 
   body {
     background-color: var(--blue);
@@ -84,11 +90,31 @@ const { title } = Astro.props;
 	}
 
   /* Navigation Container */
-.navbar {
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
   padding-bottom: 1rem;
-  background-color: var(--blue); /* Choose your background */
   border-bottom: 1px solid rgba(var(--whitergb), 0.5);
   margin-bottom: 1rem;
+}
+
+.navbar li {
+  margin: 0;
+}
+
+.navbar a {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.navbar a:hover {
+  border-color: var(--platinum);
+  background-color: var(--white);
 }
 
 .container {
