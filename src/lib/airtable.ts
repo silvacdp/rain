@@ -1,12 +1,16 @@
-const apiKey = process.env.AIRTABLE_API_KEY;
-const baseId = process.env.AIRTABLE_BASE_ID;
+import Airtable from 'airtable';
 
-if (!apiKey || !baseId) {
-  throw new Error('Missing Airtable Credentials');
+export function getBase() {
+  const apiKey = process.env.AIRTABLE_API_KEY;
+  const baseId = process.env.AIRTABLE_BASE_ID;
+
+  if (!apiKey || !baseId) {
+    throw new Error('Missing Airtable credentials');
+  }
+
+  const base = new Airtable({ apiKey }).base(baseId);
+  return base;
 }
-
-const base = new Airtable({ apiKey }).base(baseId);
-
 /*
 import Airtable from 'airtable';
 import { marked } from 'marked';
