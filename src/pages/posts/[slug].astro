@@ -4,12 +4,17 @@ import { getAllArticles } from '../../lib/airtable';
 import ImageCarousel from '../../components/ImageCarousel.svelte';
 
 export async function getStaticPaths() {
-  const articles = await getAllArticles();
-  
-  return articles.map(article => ({
-    params: { slug: article.slug },
-    props: { article },
-  }));
+  try {
+    const articles = await getAllArticles();
+
+    return articles.map(article => ({
+      params: { slug: article.slug },
+      props: { article },
+    }));
+  } catch (e) {
+    console.error('Failed to fetch articles in getStaticPaths:', e);
+    return []; // Prevent the build from crashing
+  }
 }
 
 const { article } = Astro.props;
