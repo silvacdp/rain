@@ -1,4 +1,6 @@
 import Airtable from 'airtable';
+import { marked } from 'marked';
+import type { Article, ImageAttachment } from '../types';
 
 export function getBase() {
   const apiKey = process.env.AIRTABLE_API_KEY;
@@ -11,6 +13,7 @@ export function getBase() {
   const base = new Airtable({ apiKey }).base(baseId);
   return base;
 }
+
 /*
 import Airtable from 'airtable';
 import { marked } from 'marked';
