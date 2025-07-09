@@ -17,18 +17,15 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-    <nav class="navbar" aria-label="Profile navigation">
-      <div class="container">
-	<div class="profile-info">
-  	  <h1 class="profile-name">More Rain</h1>
-	</div>
-  	<ul>
-    	  <li><a href="/">Home</a></li>
-    	  <li><a href="/category1">Category 1</a></li>
-    	  <li><a href="/about">About</a></li>
-  	</ul>
+    <nav class="navbar" aria-label="Site navigation">
+      <div class="container header-content">
+        <h1 class="profile-name">More Rain</h1>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/category1">Category 1</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
       </div>
-  
     </nav>
 		<slot />
     <footer>
@@ -118,6 +115,26 @@ const { title } = Astro.props;
 .navbar a:hover {
   border-color: var(--platinum);
   background-color: var(--platinum);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
 }
 
 .container {
