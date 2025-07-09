@@ -2,7 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import { getAllArticles } from '../lib/airtable';
 
-const articles = await getAllArticles();
+let articles = [];
+try {
+  articles = await getAllArticles();
+} catch (e) {
+  console.error('Failed to fetch articles for index page:', e);
+}
+
 ---
 
 <Layout title="Articles">
