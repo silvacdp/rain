@@ -104,8 +104,8 @@ const { title } = Astro.props;
   /* Navigation Container */
 .navbar {
   padding-bottom: 1rem;
-  background-color: var(--black); /* Choose your background */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--blue); /* Choose your background */
+  border-bottom: 1px solid rgba(var(--whitergb), 0.5);
   margin-bottom: 1rem;
 }
 
@@ -281,10 +281,10 @@ a {
 footer {
   margin-top: 2rem;
   padding: 1.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  background:rgba(var(--blackrgb), 0.02);
+  border-top: 1px solid rgba(var(--whitergb), 0.5);
+  background:rgba(var(--whitergb), 0.1);
   font-size: 0.9rem;
-  color: rgb(67, 67, 67);
+  color: rgb(var(--whitergb));
   text-align: center;
 }
 
@@ -295,7 +295,7 @@ footer ul {
 }
 
 footer a {
-  color: rgb(67, 67, 67);
+  color: rgb(var(--orangergb));
   text-decoration: underline;
 }
 
