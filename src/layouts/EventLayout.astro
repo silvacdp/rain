@@ -26,6 +26,8 @@ function getCategoryIcon(category: string): string {
   }
 }
 
+
+
 // Function to format tags for display
 // Handles both string and array formats from Airtable
 function formatTags(tags: string | string[]): string {
@@ -78,6 +80,10 @@ const formattedDate = formatDateRange(event.startDate, event.endDate);
 
 // Format tags for display (handles both string and array formats)
 const displayTags = formatTags(event.tags);
+
+// Simple globe emoji for all locations - keeps it clean and consistent
+// No need for complex country detection logic
+const locationIcon = '🌍';
 ---
 
 <!-- Use the main Layout component and pass the event title as the page title -->
@@ -95,11 +101,11 @@ const displayTags = formatTags(event.tags);
         {/* Display formatted date range if available */}
         {formattedDate && <span class="event-date">📅 {formattedDate}</span>}
         
-        {/* Display location with flag from tags */}
+        {/* Display location with globe icon */}
         {event.location && (
           <span class="event-location">
-            {/* Show flag based on country tags, or globe if no country detected */}
-            {locationFlag} {event.location}
+            {/* Simple globe icon for all locations */}
+            {locationIcon} {event.location}
           </span>
         )}
         
@@ -140,7 +146,7 @@ const displayTags = formatTags(event.tags);
     {(event.links || event.tags) && (
       <footer class="event-footer">
         {/* Tags - keywords/categories for the event */}
-        {event.tags && <p><strong>Tags:</strong> {event.tags}</p>}
+        {displayTags && <p><strong>Tags:</strong> {displayTags}</p>}
         
         {/* Source links - automatically handles any number of sources */}
         {event.links && (
@@ -246,70 +252,4 @@ const displayTags = formatTags(event.tags);
   /* Footer section with additional details */
   .event-footer {
     margin-top: 2rem; /* Space above footer */
-    padding-top: 2rem; /* Internal padding at top */
-    border-top: 1px solid rgba(var(--whitergb), 0.3); /* Subtle border separation */
-    color: var(--platinum); /* Light gray for less prominent info */
-    font-size: 0.9rem; /* Slightly smaller text */
-  }
-
-  /* Paragraphs in the footer */
-  .event-footer p {
-    margin-bottom: 0.8rem; /* Space between footer items */
-  }
-
-  /* Bold labels in the footer (like "Tags:") */
-  .event-footer strong {
-    color: var(--white); /* White color for labels to make them stand out */
-  }
-
-  /* Container for the links section */
-  .event-links {
-    margin-bottom: 0.8rem; /* Space below links section */
-  }
-
-  /* Container for individual source links */
-  .links-list {
-    display: flex; /* Vertical layout */
-    flex-direction: column; /* Stack links vertically */
-    gap: 0.5rem; /* Space between each link */
-    margin-top: 0.5rem; /* Space above the links */
-  }
-
-  /* Individual source link styling */
-  .links-list a {
-    color: var(--orange); /* Orange color using your brand color */
-    text-decoration: none; /* No underline */
-    font-weight: 500; /* Medium font weight */
-    transition: opacity 0.2s ease; /* Smooth hover effect */
-  }
-
-  /* Hover effect for source links */
-  .links-list a:hover {
-    opacity: 0.8; /* Slightly faded on hover */
-  }
-
-  /* Mobile responsiveness - styles that apply on smaller screens */
-  @media (max-width: 768px) {
-    /* Adjust container padding for mobile */
-    .event-container {
-      padding: 0 1rem 1rem; /* Less bottom padding on mobile */
-    }
-    
-    /* Smaller title on mobile */
-    .event-title {
-      font-size: 1.8rem; /* Reduced from 2.2rem */
-    }
-
-    /* Stack meta items vertically on mobile */
-    .event-meta {
-      gap: 1rem; /* Smaller gap between items */
-      flex-direction: column; /* Stack vertically instead of horizontally */
-    }
-
-    /* Adjust quote sizing for mobile */
-    .event-quote {
-      padding: 1rem; /* Less padding on mobile */
-      font-size: 1.1rem; /* Slightly smaller font */
-    }
-  }
-</style>
+    padding-top: 2rem
