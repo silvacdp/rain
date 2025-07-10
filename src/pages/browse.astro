@@ -15,7 +15,7 @@ const events = await getEvents({
   <!-- List full set of events -->
   <ul>
     {events.map(event => (
-      <li><a href={`/${event.slug}`}>{event.title}</a></li>
+      <li><a href={`/events/${event.slug}`}>{event.title}</a></li>
     ))}
   </ul>
 </Layout>
