@@ -28,6 +28,23 @@ function getCategoryIcon(category: string): string {
 
 
 
+// Function to clean and validate URLs from Airtable
+// Sometimes Airtable data can have invisible characters or formatting issues
+function cleanUrl(url: string): string {
+  // Remove all whitespace and invisible characters
+  let cleanedUrl = url.replace(/\s+/g, '').trim();
+  
+  // Remove any potential Unicode characters that might interfere
+  cleanedUrl = cleanedUrl.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  
+  // If the URL doesn't start with http:// or https://, add https://
+  if (!cleanedUrl.startsWith('http://') && !cleanedUrl.startsWith('https://')) {
+    cleanedUrl = 'https://' + cleanedUrl;
+  }
+  
+  return cleanedUrl;
+}
+
 // Function to format tags for display
 // Handles both string and array formats from Airtable
 function formatTags(tags: string | string[]): string {
@@ -155,8 +172,9 @@ const locationIcon = '🌍';
             <div class="links-list">
               {/* Split the links string by commas and create numbered source links */}
               {/* This automatically handles 1, 2, 3, 4, 5+ sources based on your Airtable data */}
+              {/* Use cleanUrl to handle any invisible characters or formatting issues from Airtable */}
               {event.links.split(',').map((link: string, index: number) => (
-                <a href={link.trim()} target="_blank" rel="noopener noreferrer">
+                <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
                   Source {index + 1} →
                 </a>
               ))}
