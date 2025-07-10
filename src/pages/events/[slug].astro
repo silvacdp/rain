@@ -1,21 +1,24 @@
 ---
 // src/pages/events/[slug].astro
+
+// 1. Import your Airtable fetch function
 import { getEvents } from '../../lib/getEvents';
 
+// 2. Tell Astro how to generate all the pages (one per event)
 export async function getStaticPaths() {
   const events = await getEvents();
 
   return events.map(event => ({
-    params: { slug: event.slug },
-    props: { event },
+    params: { slug: event.slug }, // URL will be /events/some-slug
+    props: { event },             // Pass the event to the page
   }));
 }
 
+// 3. Grab the event passed from getStaticPaths
 const { event } = Astro.props;
 ---
 
----
-
+<!-- 4. This is the actual HTML of the page -->
 <html>
   <head><title>{event.title}</title></head>
   <body>
@@ -25,13 +28,3 @@ const { event } = Astro.props;
     <p>{event.summary}</p>
   </body>
 </html>
-
-
-export async function getStaticPaths() {
-  const events = await getEvents();
-
-  return events.map(event => ({
-    params: { slug: event.slug },
-    props: { event },
-  }));
-}
