@@ -1,12 +1,21 @@
 ---
-// src/pages/browse.astro
 import Layout from '../layouts/Layout.astro';
+import { getEvents } from '../utils/getEvents.ts';
+
+// Fetch all events sorted by start date
+const events = await getEvents({
+  sortField: 'Start Date',
+  sortDirection: 'desc'
+});
 ---
+
 <Layout>
   <h1>All Events</h1>
+
+  <!-- List full set of events -->
   <ul>
-    <li>Example Event: Rio Flood - July 2025</li>
-    <li>Example Event: Pakistan Heatwave - May 2025</li>
-    <!-- Replace with loop once Airtable is live -->
+    {events.map(event => (
+      <li><a href={`/${event.slug}`}>{event.title}</a></li>
+    ))}
   </ul>
 </Layout>
