@@ -172,11 +172,17 @@ const locationIcon = '🌍';
             <div class="links-list">
               {/* Split the links string by commas and create numbered source links */}
               {/* This automatically handles 1, 2, 3, 4, 5+ sources based on your Airtable data */}
-              {/* Use cleanUrl to handle any invisible characters or formatting issues from Airtable */}
+              {/* Temporarily showing the URL for debugging - we can remove this once it's working */}
               {event.links.split(',').map((link: string, index: number) => (
-                <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
-                  Source {index + 1} →
-                </a>
+                <div>
+                  <a href={link.trim()} target="_blank" rel="noopener noreferrer">
+                    Source {index + 1} →
+                  </a>
+                  <br />
+                  <small style="color: #666; font-size: 0.8rem;">
+                    DEBUG: Raw URL = "{link.trim()}"
+                  </small>
+                </div>
               ))}
             </div>
           </div>
