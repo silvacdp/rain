@@ -8,6 +8,221 @@ import Layout from './Layout.astro';
 
 // Destructure the event object from Astro.props - this contains all the event data from Airtable
 const { event } = Astro.props;
+
+// Function to get the appropriate icon for each event category
+// This matches your exact Airtable category values and makes the site more visual
+function getCategoryIcon(category: string): string {
+  switch (category) {
+    case 'Rain/Flood':
+      return '🌧️'; // Rain cloud for rain/flood events
+    case 'Heatwave':
+      return '🌡️'; // Thermometer for extreme heat events
+    case 'Wildfire':
+      return '🔥'; // Fire emoji for wildfire events
+    case 'Other':
+      return '⚠️'; // Warning triangle for miscellaneous climate events
+    default:
+      return '🌍'; // Globe as ultimate fallback
+  }
+}
+
+// Comprehensive country name to ISO code mapping
+// This allows you to write natural country names in tags and get automatic flag detection
+const countryNameToCode: { [key: string]: string } = {
+  // Major countries you'll likely use most often
+  'USA': 'US',
+  'United States': 'US',
+  'China': 'CN',
+  'India': 'IN',
+  'Germany': 'DE',
+  'France': 'FR',
+  'United Kingdom': 'GB',
+  'UK': 'GB',
+  'Japan': 'JP',
+  'Australia': 'AU',
+  'Canada': 'CA',
+  'Brazil': 'BR',
+  'Russia': 'RU',
+  'Italy': 'IT',
+  'Spain': 'ES',
+  'Mexico': 'MX',
+  'Argentina': 'AR',
+  'South Africa': 'ZA',
+  'Indonesia': 'ID',
+  'Turkey': 'TR',
+  'South Korea': 'KR',
+  'Saudi Arabia': 'SA',
+  'Netherlands': 'NL',
+  'Belgium': 'BE',
+  'Switzerland': 'CH',
+  'Austria': 'AT',
+  'Sweden': 'SE',
+  'Norway': 'NO',
+  'Denmark': 'DK',
+  'Finland': 'FI',
+  'Poland': 'PL',
+  'Greece': 'GR',
+  'Portugal': 'PT',
+  'Czech Republic': 'CZ',
+  'Hungary': 'HU',
+  'Thailand': 'TH',
+  'Vietnam': 'VN',
+  'Philippines': 'PH',
+  'Malaysia': 'MY',
+  'Singapore': 'SG',
+  'Egypt': 'EG',
+  'Israel': 'IL',
+  'Iran': 'IR',
+  'Iraq': 'IQ',
+  'Chile': 'CL',
+  'Peru': 'PE',
+  'Colombia': 'CO',
+  'Venezuela': 'VE',
+  'Ukraine': 'UA',
+  'Nigeria': 'NG',
+  'Kenya': 'KE',
+  'Morocco': 'MA',
+  'Algeria': 'DZ',
+  'New Zealand': 'NZ',
+  'Pakistan': 'PK',
+  'Bangladesh': 'BD',
+  'Sri Lanka': 'LK',
+  'Myanmar': 'MM',
+  'Cambodia': 'KH',
+  'Laos': 'LA',
+  'Nepal': 'NP',
+  'Afghanistan': 'AF',
+  'Kazakhstan': 'KZ',
+  'Uzbekistan': 'UZ',
+  'Mongolia': 'MN',
+  'North Korea': 'KP',
+  'Taiwan': 'TW',
+  'Hong Kong': 'HK',
+  'Macao': 'MO',
+  'Cuba': 'CU',
+  'Jamaica': 'JM',
+  'Dominican Republic': 'DO',
+  'Haiti': 'HT',
+  'Puerto Rico': 'PR',
+  'Costa Rica': 'CR',
+  'Panama': 'PA',
+  'Guatemala': 'GT',
+  'Honduras': 'HN',
+  'Nicaragua': 'NI',
+  'El Salvador': 'SV',
+  'Belize': 'BZ',
+  'Ecuador': 'EC',
+  'Bolivia': 'BO',
+  'Paraguay': 'PY',
+  'Uruguay': 'UY',
+  'Guyana': 'GY',
+  'Suriname': 'SR',
+  'French Guiana': 'GF',
+  'Iceland': 'IS',
+  'Ireland': 'IE',
+  'Luxembourg': 'LU',
+  'Malta': 'MT',
+  'Cyprus': 'CY',
+  'Estonia': 'EE',
+  'Latvia': 'LV',
+  'Lithuania': 'LT',
+  'Slovenia': 'SI',
+  'Slovakia': 'SK',
+  'Croatia': 'HR',
+  'Bosnia and Herzegovina': 'BA',
+  'Serbia': 'RS',
+  'Montenegro': 'ME',
+  'North Macedonia': 'MK',
+  'Albania': 'AL',
+  'Bulgaria': 'BG',
+  'Romania': 'RO',
+  'Moldova': 'MD',
+  'Belarus': 'BY',
+  'Georgia': 'GE',
+  'Armenia': 'AM',
+  'Azerbaijan': 'AZ',
+  // Add more countries as needed - this covers most major ones
+};
+
+// Function to convert country code to flag emoji
+// Uses Unicode regional indicator symbols to create flag emojis
+function countryCodeToFlag(countryCode: string): string {
+  // Handle special case for Europe - use EU flag even though it's not a country
+  if (countryCode === 'EU') return '🇪🇺';
+  
+  // Convert country code to flag emoji using regional indicator symbols
+  // This works by adding 127397 to each character code to get the regional indicator
+  return countryCode.toUpperCase().split('').map(char => 
+    String.fromCodePoint(char.charCodeAt(0) + 127397)
+  ).join('');
+}
+
+// Function to extract country flag from tags
+// Looks through all tags to find country names and returns the appropriate flag
+function getFlagFromTags(tags: string): string {
+  if (!tags) return '🌍'; // Default to globe if no tags
+  
+  // Split tags by common separators (comma, semicolon, pipe)
+  const tagList = tags.split(/[,;|]/).map(tag => tag.trim());
+  
+  // Check for special regional tags first
+  for (const tag of tagList) {
+    if (tag.toLowerCase() === 'europe') {
+      return '🇪🇺'; // EU flag for Europe
+    }
+  }
+  
+  // Look for country names in tags
+  for (const tag of tagList) {
+    // Check if this tag matches any country name (case-insensitive)
+    const countryCode = countryNameToCode[tag] || countryNameToCode[tag.toLowerCase()];
+    if (countryCode) {
+      return countryCodeToFlag(countryCode);
+    }
+  }
+  
+  // Default to globe if no country found in tags
+  return '🌍';
+}
+
+// Function to format date ranges in a human-readable way
+// Converts "2025-07-07" to "July 7, 2025" or "July 7-10, 2025" for ranges
+function formatDateRange(startDate: string, endDate?: string): string {
+  if (!startDate) return '';
+  
+  const start = new Date(startDate);
+  const startOptions: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  
+  // If no end date, just return the start date
+  if (!endDate) {
+    return start.toLocaleDateString('en-US', startOptions);
+  }
+  
+  const end = new Date(endDate);
+  
+  // If same month and year, show "July 7-10, 2025"
+  if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+    return `${start.toLocaleDateString('en-US', { month: 'long' })} ${start.getDate()}-${end.getDate()}, ${start.getFullYear()}`;
+  }
+  
+  // If different months, show "July 7 - August 3, 2025"
+  if (start.getFullYear() === end.getFullYear()) {
+    return `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, ${start.getFullYear()}`;
+  }
+  
+  // If different years, show full dates
+  return `${start.toLocaleDateString('en-US', startOptions)} - ${end.toLocaleDateString('en-US', startOptions)}`;
+}
+
+// Process the formatted date for display
+const formattedDate = formatDateRange(event.startDate, event.endDate);
+
+// Get the flag from tags for this event
+const locationFlag = getFlagFromTags(event.tags);
 ---
 
 <!-- Use the main Layout component and pass the event title as the page title -->
@@ -22,12 +237,23 @@ const { event } = Astro.props;
       
       <!-- Meta information section - only shows if the data exists in Airtable -->
       <div class="event-meta">
-        {/* Conditional rendering: only show date if startDate exists in Airtable */}
-        {event.startDate && <span class="event-date">📅 {event.startDate}</span>}
-        {/* Conditional rendering: only show location if location exists in Airtable */}
-        {event.location && <span class="event-location">📍 {event.location}</span>}
-        {/* Conditional rendering: only show category if category exists in Airtable */}
-        {event.category && <span class="event-category">🏷️ {event.category}</span>}
+        {/* Display formatted date range if available */}
+        {formattedDate && <span class="event-date">📅 {formattedDate}</span>}
+        
+        {/* Display location with flag from tags */}
+        {event.location && (
+          <span class="event-location">
+            {/* Show flag based on country tags, or globe if no country detected */}
+            {locationFlag} {event.location}
+          </span>
+        )}
+        
+        {/* Display category with appropriate icon */}
+        {event.category && (
+          <span class="event-category">
+            {getCategoryIcon(event.category)} {event.category}
+          </span>
+        )}
       </div>
     </header>
 
@@ -56,32 +282,26 @@ const { event } = Astro.props;
 
     <!-- Footer section with additional details and source links -->
     <!-- Only shows if at least one of these fields has data -->
-    {(event.links || event.endDate || event.tags) && (
+    {(event.links || event.tags) && (
       <footer class="event-footer">
-        {/* End date - useful for events that lasted multiple days */}
-        {event.endDate && <p><strong>End Date:</strong> {event.endDate}</p>}
-        
         {/* Tags - keywords/categories for the event */}
         {event.tags && <p><strong>Tags:</strong> {event.tags}</p>}
         
-        {/* Source links - the credible news sources you mentioned wanting 3 of */}
+        {/* Source links - automatically handles any number of sources */}
         {event.links && (
           <div class="event-links">
             <strong>Sources:</strong>
             <div class="links-list">
-              {/* Split the links string by commas and create individual link elements */}
-              {/* This assumes your Airtable stores multiple links as comma-separated values */}
-              {event.links.split(',').map((link: string) => (
+              {/* Split the links string by commas and create numbered source links */}
+              {/* This automatically handles 1, 2, 3, 4, 5+ sources based on your Airtable data */}
+              {event.links.split(',').map((link: string, index: number) => (
                 <a href={link.trim()} target="_blank" rel="noopener noreferrer">
-                  Read more →
+                  Source {index + 1} →
                 </a>
               ))}
             </div>
           </div>
         )}
-        
-        {/* Miscellaneous additional information */}
-        {event.misc && <p><strong>Additional Info:</strong> {event.misc}</p>}
       </footer>
     )}
   </article>
@@ -182,7 +402,7 @@ const { event } = Astro.props;
     margin-bottom: 0.8rem; /* Space between footer items */
   }
 
-  /* Bold labels in the footer (like "End Date:", "Tags:") */
+  /* Bold labels in the footer (like "Tags:") */
   .event-footer strong {
     color: var(--white); /* White color for labels to make them stand out */
   }
