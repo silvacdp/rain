@@ -2,7 +2,7 @@
 export async function getEvents() {
   const token = import.meta.env.AIRTABLE_TOKEN;
   const baseId = 'app6bt0nMimeKjIQ5';
-  const tableName = 'Events';
+  const tableName = 'More Rain';
 
   const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}`, {
     headers: {
