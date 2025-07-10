@@ -1,112 +1,240 @@
 ---
 // src/layouts/EventLayout.astro
+// This is the layout template for individual event pages
+// It receives event data from Airtable and displays it in a structured format
+
+// Import the main Layout component which provides the site header, footer, and global styles
 import Layout from './Layout.astro';
 
+// Destructure the event object from Astro.props - this contains all the event data from Airtable
 const { event } = Astro.props;
 ---
 
+<!-- Use the main Layout component and pass the event title as the page title -->
 <Layout title={event.title}>
+  <!-- Main article container for the event content -->
   <article class="event-container">
+    
+    <!-- Header section with event title and metadata -->
     <header class="event-header">
+      <!-- Main event title - this comes from your Airtable 'title' field -->
       <h1 class="event-title">{event.title}</h1>
+      
+      <!-- Meta information section - only shows if the data exists in Airtable -->
       <div class="event-meta">
+        {/* Conditional rendering: only show date if startDate exists in Airtable */}
         {event.startDate && <span class="event-date">📅 {event.startDate}</span>}
+        {/* Conditional rendering: only show location if location exists in Airtable */}
         {event.location && <span class="event-location">📍 {event.location}</span>}
+        {/* Conditional rendering: only show category if category exists in Airtable */}
         {event.category && <span class="event-category">🏷️ {event.category}</span>}
       </div>
     </header>
 
+    <!-- Image section - only displays if an image URL exists in Airtable -->
     {event.imageUrl && (
       <div class="event-image">
+        <!-- Main event image with alt text for accessibility -->
         <img src={event.imageUrl} alt={event.title} />
+        {/* Optional image source attribution - only shows if imageSource field has data */}
         {event.imageSource && <p class="image-source">Source: {event.imageSource}</p>}
       </div>
     )}
 
+    <!-- Quote section - displays an impactful quote from news coverage if available -->
     {event.quote && (
       <blockquote class="event-quote">
         "{event.quote}"
       </blockquote>
     )}
 
+    <!-- Main content section with event summary -->
     <div class="event-content">
+      {/* Event summary paragraph - the main description of what happened */}
       {event.summary && <p class="event-summary">{event.summary}</p>}
     </div>
 
-    <footer class="event-footer">
-      {event.endDate && <p><strong>End Date:</strong> {event.endDate}</p>}
-      {event.tags && <p><strong>Tags:</strong> {event.tags}</p>}
-      {event.links && <p><strong>Links:</strong> {event.links}</p>}
-      {event.misc && <p><strong>Additional Info:</strong> {event.misc}</p>}
-    </footer>
+    <!-- Footer section with additional details and source links -->
+    <!-- Only shows if at least one of these fields has data -->
+    {(event.links || event.endDate || event.tags) && (
+      <footer class="event-footer">
+        {/* End date - useful for events that lasted multiple days */}
+        {event.endDate && <p><strong>End Date:</strong> {event.endDate}</p>}
+        
+        {/* Tags - keywords/categories for the event */}
+        {event.tags && <p><strong>Tags:</strong> {event.tags}</p>}
+        
+        {/* Source links - the credible news sources you mentioned wanting 3 of */}
+        {event.links && (
+          <div class="event-links">
+            <strong>Sources:</strong>
+            <div class="links-list">
+              {/* Split the links string by commas and create individual link elements */}
+              {/* This assumes your Airtable stores multiple links as comma-separated values */}
+              {event.links.split(',').map((link: string) => (
+                <a href={link.trim()} target="_blank" rel="noopener noreferrer">
+                  Read more →
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Miscellaneous additional information */}
+        {event.misc && <p><strong>Additional Info:</strong> {event.misc}</p>}
+      </footer>
+    )}
   </article>
 </Layout>
 
 <style>
+  /* Main container for the entire event page */
   .event-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+    max-width: 800px; /* Matches your Layout.astro container width */
+    margin: 0 auto; /* Centers the container horizontally */
+    padding: 0 1rem 2rem; /* Top: 0, sides: 1rem, bottom: 2rem */
+    color: var(--white); /* Uses your white color variable from Layout.astro */
   }
 
+  /* Header section styling */
   .event-header {
-    margin-bottom: 2rem;
+    margin-bottom: 2rem; /* Space below the header before the next section */
   }
 
+  /* Main event title styling */
   .event-title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: 2.2rem; /* Large, prominent title */
+    margin-bottom: 1rem; /* Space below title */
+    color: var(--white); /* White text using your color variable */
+    line-height: 1.2; /* Tighter line height for better readability */
+    font-weight: 700; /* Bold font weight */
   }
 
+  /* Container for the metadata (date, location, category) */
   .event-meta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    font-size: 0.9rem;
-    color: #666;
+    display: flex; /* Horizontal layout */
+    gap: 1.5rem; /* Space between each meta item */
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    font-size: 0.9rem; /* Slightly smaller than body text */
+    color: var(--platinum); /* Light gray color for less prominence */
+    margin-bottom: 1rem; /* Space below meta section */
   }
 
+  /* Individual meta items (date, location, category) */
+  .event-meta span {
+    display: flex; /* Allows emoji and text to align properly */
+    align-items: center; /* Vertically centers emoji with text */
+    gap: 0.3rem; /* Small space between emoji and text */
+  }
+
+  /* Image section container */
   .event-image {
-    margin: 2rem 0;
+    margin: 2rem 0; /* Vertical margin above and below */
   }
 
+  /* The actual event image */
   .event-image img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 100%; /* Full width of container */
+    height: auto; /* Maintains aspect ratio */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(var(--blackrgb), 0.3); /* Subtle shadow using your black color */
   }
 
+  /* Image source attribution text */
   .image-source {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 0.5rem;
+    font-size: 0.8rem; /* Smaller text for attribution */
+    color: var(--platinum); /* Light gray color */
+    margin-top: 0.5rem; /* Small space above attribution */
+    font-style: italic; /* Italic text to differentiate from main content */
   }
 
+  /* Quote styling - this gets special treatment as an important element */
   .event-quote {
-    font-style: italic;
-    font-size: 1.1rem;
-    margin: 2rem 0;
-    padding: 1rem;
-    border-left: 4px solid #007acc;
-    background-color: #f9f9f9;
+    font-style: italic; /* Italic text for quotes */
+    font-size: 1.2rem; /* Slightly larger than body text */
+    margin: 2rem 0; /* Generous vertical spacing */
+    padding: 1.5rem; /* Internal padding for breathing room */
+    border-left: 4px solid var(--orange); /* Orange left border using your brand color */
+    background-color: rgba(var(--whitergb), 0.05); /* Very subtle white background */
+    border-radius: 0 4px 4px 0; /* Rounded corners except top-left */
+    color: var(--white); /* White text */
   }
 
+  /* Main event summary text */
   .event-summary {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
+    font-size: 1.1rem; /* Slightly larger than default for readability */
+    line-height: 1.7; /* Generous line height for easy reading */
+    margin-bottom: 2rem; /* Space below summary */
+    color: var(--white); /* White text */
   }
 
+  /* Footer section with additional details */
   .event-footer {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid #eee;
-    color: #666;
+    margin-top: 2rem; /* Space above footer */
+    padding-top: 2rem; /* Internal padding at top */
+    border-top: 1px solid rgba(var(--whitergb), 0.3); /* Subtle border separation */
+    color: var(--platinum); /* Light gray for less prominent info */
+    font-size: 0.9rem; /* Slightly smaller text */
   }
 
+  /* Paragraphs in the footer */
   .event-footer p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem; /* Space between footer items */
+  }
+
+  /* Bold labels in the footer (like "End Date:", "Tags:") */
+  .event-footer strong {
+    color: var(--white); /* White color for labels to make them stand out */
+  }
+
+  /* Container for the links section */
+  .event-links {
+    margin-bottom: 0.8rem; /* Space below links section */
+  }
+
+  /* Container for individual source links */
+  .links-list {
+    display: flex; /* Vertical layout */
+    flex-direction: column; /* Stack links vertically */
+    gap: 0.5rem; /* Space between each link */
+    margin-top: 0.5rem; /* Space above the links */
+  }
+
+  /* Individual source link styling */
+  .links-list a {
+    color: var(--orange); /* Orange color using your brand color */
+    text-decoration: none; /* No underline */
+    font-weight: 500; /* Medium font weight */
+    transition: opacity 0.2s ease; /* Smooth hover effect */
+  }
+
+  /* Hover effect for source links */
+  .links-list a:hover {
+    opacity: 0.8; /* Slightly faded on hover */
+  }
+
+  /* Mobile responsiveness - styles that apply on smaller screens */
+  @media (max-width: 768px) {
+    /* Adjust container padding for mobile */
+    .event-container {
+      padding: 0 1rem 1rem; /* Less bottom padding on mobile */
+    }
+    
+    /* Smaller title on mobile */
+    .event-title {
+      font-size: 1.8rem; /* Reduced from 2.2rem */
+    }
+
+    /* Stack meta items vertically on mobile */
+    .event-meta {
+      gap: 1rem; /* Smaller gap between items */
+      flex-direction: column; /* Stack vertically instead of horizontally */
+    }
+
+    /* Adjust quote sizing for mobile */
+    .event-quote {
+      padding: 1rem; /* Less padding on mobile */
+      font-size: 1.1rem; /* Slightly smaller font */
+    }
   }
 </style>
