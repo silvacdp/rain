@@ -1,0 +1,112 @@
+---
+// src/layouts/EventLayout.astro
+import Layout from './Layout.astro';
+
+const { event } = Astro.props;
+---
+
+<Layout title={event.title}>
+  <article class="event-container">
+    <header class="event-header">
+      <h1 class="event-title">{event.title}</h1>
+      <div class="event-meta">
+        {event.startDate && <span class="event-date">📅 {event.startDate}</span>}
+        {event.location && <span class="event-location">📍 {event.location}</span>}
+        {event.category && <span class="event-category">🏷️ {event.category}</span>}
+      </div>
+    </header>
+
+    {event.imageUrl && (
+      <div class="event-image">
+        <img src={event.imageUrl} alt={event.title} />
+        {event.imageSource && <p class="image-source">Source: {event.imageSource}</p>}
+      </div>
+    )}
+
+    {event.quote && (
+      <blockquote class="event-quote">
+        "{event.quote}"
+      </blockquote>
+    )}
+
+    <div class="event-content">
+      {event.summary && <p class="event-summary">{event.summary}</p>}
+    </div>
+
+    <footer class="event-footer">
+      {event.endDate && <p><strong>End Date:</strong> {event.endDate}</p>}
+      {event.tags && <p><strong>Tags:</strong> {event.tags}</p>}
+      {event.links && <p><strong>Links:</strong> {event.links}</p>}
+      {event.misc && <p><strong>Additional Info:</strong> {event.misc}</p>}
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .event-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .event-header {
+    margin-bottom: 2rem;
+  }
+
+  .event-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .event-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .event-image {
+    margin: 2rem 0;
+  }
+
+  .event-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .image-source {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0.5rem;
+  }
+
+  .event-quote {
+    font-style: italic;
+    font-size: 1.1rem;
+    margin: 2rem 0;
+    padding: 1rem;
+    border-left: 4px solid #007acc;
+    background-color: #f9f9f9;
+  }
+
+  .event-summary {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .event-footer {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+    color: #666;
+  }
+
+  .event-footer p {
+    margin-bottom: 0.5rem;
+  }
+</style>
