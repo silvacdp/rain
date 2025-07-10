@@ -1,151 +1,22 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getAllArticles } from '../../lib/airtable';
-import ImageCarousel from '../../components/ImageCarousel.svelte';
+// src/pages/events/[slug].astro
+import { getEvents } from '../../lib/getEvents';
 
-export async function getStaticPaths() {
-  try {
-    const articles = await getAllArticles();
+const { slug } = Astro.params;
+const events = await getEvents();
+const event = events.find(e => e.slug === slug);
 
-    return articles.map(article => ({
-      params: { slug: article.slug },
-      props: { article },
-    }));
-  } catch (e) {
-    console.error('Failed to fetch articles in getStaticPaths:', e);
-    return []; // Prevent the build from crashing
-  }
+if (!event) {
+  throw new Error(`Event not found: ${slug}`);
 }
-
-const { article } = Astro.props;
-
-const currentUrl = `https://posts.martimalinda.cz/posts/${article.slug}`;
-
-
-  // If there is at least one image, use the first as OG/Twitter image
-const firstImage = article.images && article.images.length > 0
-  ? article.images[0].thumbnails?.large.url
-  : null;
 ---
 
-<head>
-  <!-- Basic SEO -->
-  <title>{article.header} | Martin Malinda</title>
-  <meta name="description" content={article.shortDescription} />
-  <meta name="robots" content="index, follow" />
-
-  <!-- Canonical: Points to the original article location
-       If you want YOUR site to be the canonical, change href to {currentUrl} -->
-  <link rel="canonical" href={article.originalLink} />
-
-  <!-- Open Graph (Facebook, LinkedIn, etc.) -->
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content={article.header} />
-  <meta property="og:description" content={article.shortDescription} />
-  <meta property="og:url" content={currentUrl} />
-  <!-- Adjust or remove if you don't have a known site name -->
-  <meta property="og:site_name" content="MyWebsite" />
-  { firstImage && <meta property="og:image" content={firstImage} /> }
-
-  <!-- Twitter Cards -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={article.header} />
-  <meta name="twitter:description" content={article.shortDescription} />
-{ firstImage && <meta name="twitter:image" content={firstImage} /> }
-
-<meta property="article:published_time" content={new Date(article.publishedAt).toISOString()} />
-<meta name="date" content={new Date(article.publishedAt).toISOString()} />
-
-  <!-- JSON-LD Structured Data (Basic Example) -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": article.header,
-    "articleBody": article.shortDescription,
-    "url": currentUrl,
-    "mainEntityOfPage": currentUrl,
-    "datePublished": new Date(article.publishedAt).toISOString(),
-    "dateModified": new Date(article.publishedAt).toISOString()
-  }, null, 2)}>
-  </script>
-</head>
-
-<Layout title={article.header}>
-  <main>
-    <article class="article">
-      <h1>{article.header}</h1>
-      <a href={article.originalLink} target="_blank" class="post-type">{article.postType}</a>
-      &bull; {article.publishedAt.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })}
-      <div class="content" set:html={article.html} />
-       <!-- Render the carousel at the bottom, client-only -->
-       {article.images?.length > 0 && (
-        <ImageCarousel client:only="svelte" images={article.images} />
-      )}
-    </article>
-  </main>
-</Layout>
-
-<style>
-  main {
-    margin: auto;
-    padding: 1rem;
-    width: 800px;
-    max-width: calc(100% - 1rem);
-  }
-
-  .article {
-    background: white;
-    padding: 2rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-    @media (max-width: 800px) {
-      box-shadow: none;
-      padding: 0;
-    }
-  }
-
-  .post-type {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    background: #f3f4f6;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    color: black;
-  }
-
-  h1 {
-    margin: 0 0 2rem 0;
-    font-size: 1.8rem;
-    line-height: 1.4;
-    margin-bottom: 0.5rem;
-  }
-
-  .content {
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-  }
-
-  .content :global(h2) {
-    margin: 2rem 0 1rem;
-    font-size: 1.8rem;
-  }
-
-  .content :global(code) {
-    padding: 2px 4px;
-    background: rgb(240, 240, 240);
-    border-radius: 4px;
-  }
-
-  .content :global(p) {
-    margin-bottom: 1rem;
-    margin-top: 0;
-  }
-</style>
+<html>
+  <head><title>{event.title}</title></head>
+  <body>
+    <h1>{event.title}</h1>
+    <p><strong>Date:</strong> {event.date}</p>
+    <p><strong>Location:</strong> {event.location}</p>
+    <p>{event.summary}</p>
+  </body>
+</html>
