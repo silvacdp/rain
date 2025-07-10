@@ -26,163 +26,18 @@ function getCategoryIcon(category: string): string {
   }
 }
 
-// Comprehensive country name to ISO code mapping
-// This allows you to write natural country names in tags and get automatic flag detection
-const countryNameToCode: { [key: string]: string } = {
-  // Major countries you'll likely use most often
-  'USA': 'US',
-  'United States': 'US',
-  'China': 'CN',
-  'India': 'IN',
-  'Germany': 'DE',
-  'France': 'FR',
-  'United Kingdom': 'GB',
-  'UK': 'GB',
-  'Japan': 'JP',
-  'Australia': 'AU',
-  'Canada': 'CA',
-  'Brazil': 'BR',
-  'Russia': 'RU',
-  'Italy': 'IT',
-  'Spain': 'ES',
-  'Mexico': 'MX',
-  'Argentina': 'AR',
-  'South Africa': 'ZA',
-  'Indonesia': 'ID',
-  'Turkey': 'TR',
-  'South Korea': 'KR',
-  'Saudi Arabia': 'SA',
-  'Netherlands': 'NL',
-  'Belgium': 'BE',
-  'Switzerland': 'CH',
-  'Austria': 'AT',
-  'Sweden': 'SE',
-  'Norway': 'NO',
-  'Denmark': 'DK',
-  'Finland': 'FI',
-  'Poland': 'PL',
-  'Greece': 'GR',
-  'Portugal': 'PT',
-  'Czech Republic': 'CZ',
-  'Hungary': 'HU',
-  'Thailand': 'TH',
-  'Vietnam': 'VN',
-  'Philippines': 'PH',
-  'Malaysia': 'MY',
-  'Singapore': 'SG',
-  'Egypt': 'EG',
-  'Israel': 'IL',
-  'Iran': 'IR',
-  'Iraq': 'IQ',
-  'Chile': 'CL',
-  'Peru': 'PE',
-  'Colombia': 'CO',
-  'Venezuela': 'VE',
-  'Ukraine': 'UA',
-  'Nigeria': 'NG',
-  'Kenya': 'KE',
-  'Morocco': 'MA',
-  'Algeria': 'DZ',
-  'New Zealand': 'NZ',
-  'Pakistan': 'PK',
-  'Bangladesh': 'BD',
-  'Sri Lanka': 'LK',
-  'Myanmar': 'MM',
-  'Cambodia': 'KH',
-  'Laos': 'LA',
-  'Nepal': 'NP',
-  'Afghanistan': 'AF',
-  'Kazakhstan': 'KZ',
-  'Uzbekistan': 'UZ',
-  'Mongolia': 'MN',
-  'North Korea': 'KP',
-  'Taiwan': 'TW',
-  'Hong Kong': 'HK',
-  'Macao': 'MO',
-  'Cuba': 'CU',
-  'Jamaica': 'JM',
-  'Dominican Republic': 'DO',
-  'Haiti': 'HT',
-  'Puerto Rico': 'PR',
-  'Costa Rica': 'CR',
-  'Panama': 'PA',
-  'Guatemala': 'GT',
-  'Honduras': 'HN',
-  'Nicaragua': 'NI',
-  'El Salvador': 'SV',
-  'Belize': 'BZ',
-  'Ecuador': 'EC',
-  'Bolivia': 'BO',
-  'Paraguay': 'PY',
-  'Uruguay': 'UY',
-  'Guyana': 'GY',
-  'Suriname': 'SR',
-  'French Guiana': 'GF',
-  'Iceland': 'IS',
-  'Ireland': 'IE',
-  'Luxembourg': 'LU',
-  'Malta': 'MT',
-  'Cyprus': 'CY',
-  'Estonia': 'EE',
-  'Latvia': 'LV',
-  'Lithuania': 'LT',
-  'Slovenia': 'SI',
-  'Slovakia': 'SK',
-  'Croatia': 'HR',
-  'Bosnia and Herzegovina': 'BA',
-  'Serbia': 'RS',
-  'Montenegro': 'ME',
-  'North Macedonia': 'MK',
-  'Albania': 'AL',
-  'Bulgaria': 'BG',
-  'Romania': 'RO',
-  'Moldova': 'MD',
-  'Belarus': 'BY',
-  'Georgia': 'GE',
-  'Armenia': 'AM',
-  'Azerbaijan': 'AZ',
-  // Add more countries as needed - this covers most major ones
-};
-
-// Function to convert country code to flag emoji
-// Uses Unicode regional indicator symbols to create flag emojis
-function countryCodeToFlag(countryCode: string): string {
-  // Handle special case for Europe - use EU flag even though it's not a country
-  if (countryCode === 'EU') return '🇪🇺';
+// Function to format tags for display
+// Handles both string and array formats from Airtable
+function formatTags(tags: string | string[]): string {
+  if (!tags) return '';
   
-  // Convert country code to flag emoji using regional indicator symbols
-  // This works by adding 127397 to each character code to get the regional indicator
-  return countryCode.toUpperCase().split('').map(char => 
-    String.fromCodePoint(char.charCodeAt(0) + 127397)
-  ).join('');
-}
-
-// Function to extract country flag from tags
-// Looks through all tags to find country names and returns the appropriate flag
-function getFlagFromTags(tags: string): string {
-  if (!tags || typeof tags !== 'string') return '🌍'; // Default to globe if no tags or not a string
-  
-  // Split tags by common separators (comma, semicolon, pipe)
-  const tagList = tags.split(/[,;|]/).map(tag => tag.trim());
-  
-  // Check for special regional tags first
-  for (const tag of tagList) {
-    if (tag.toLowerCase() === 'europe') {
-      return '🇪🇺'; // EU flag for Europe
-    }
+  // If tags is an array (Airtable's default format), join with commas
+  if (Array.isArray(tags)) {
+    return tags.join(', ');
   }
   
-  // Look for country names in tags
-  for (const tag of tagList) {
-    // Check if this tag matches any country name (case-insensitive)
-    const countryCode = countryNameToCode[tag] || countryNameToCode[tag.toLowerCase()];
-    if (countryCode) {
-      return countryCodeToFlag(countryCode);
-    }
-  }
-  
-  // Default to globe if no country found in tags
-  return '🌍';
+  // If tags is a string, return as-is
+  return tags;
 }
 
 // Function to format date ranges in a human-readable way
@@ -221,8 +76,8 @@ function formatDateRange(startDate: string, endDate?: string): string {
 // Process the formatted date for display
 const formattedDate = formatDateRange(event.startDate, event.endDate);
 
-// Get the flag from tags for this event
-const locationFlag = getFlagFromTags(event.tags);
+// Format tags for display (handles both string and array formats)
+const displayTags = formatTags(event.tags);
 ---
 
 <!-- Use the main Layout component and pass the event title as the page title -->
