@@ -1,10 +1,7 @@
 import { defineConfig } from 'astro/config';
-import svelte from '@astrojs/svelte';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default defineConfig({
-  site: 'https://your-site.com',
-  output: 'static',
-  integrations: [
-    svelte()
-  ],
+  // your config here
 });
