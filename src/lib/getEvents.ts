@@ -1,43 +1,46 @@
-export async function getEvents() {
+// src/utils/getEvents.ts
+
+export async function getEvents({
+  sortField = 'Start Date', // default sort
+  sortDirection = 'desc',
+  maxRecords,
+  filters = '',
+} = {}) {
   const baseId = process.env.AIRTABLE_BASE_ID;
   const tableName = 'More Rain';
   const token = process.env.AIRTABLE_TOKEN;
-  
-  console.log("ENV CHECK - token:", token ? "✅ set" : "❌ MISSING");
-  console.log("ENV CHECK - baseId:", baseId ? "✅ set" : "❌ MISSING");
-  console.log("Token length:", token?.length);
-  console.log("Token starts with:", token?.substring(0, 10) + "...");
-  console.log("Base ID:", baseId);
-  
+
   const encodedTableName = encodeURIComponent(tableName);
-  const url = `https://api.airtable.com/v0/${baseId}/${encodedTableName}`;
-  
-  console.log("Full URL:", url);
-  
+
+  // Build query params dynamically
+  const params = new URLSearchParams();
+  params.append('sort[0][field]', sortField);
+  params.append('sort[0][direction]', sortDirection);
+  if (maxRecords) params.append('maxRecords', maxRecords.toString());
+  if (filters) params.append('filterByFormula', filters);
+
+  const url = `https://api.airtable.com/v0/${baseId}/${encodedTableName}?${params.toString()}`;
+
   const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  
-  console.log("Response status:", res.status);
-  console.log("Response statusText:", res.statusText);
-  
+
   if (!res.ok) {
-    // Let's see what Airtable is actually telling us
     const errorText = await res.text();
-    console.log("Error response body:", errorText);
-    throw new Error(`Failed to fetch Airtable: ${res.statusText} - ${errorText}`);
+    throw new Error(`Airtable fetch error: ${res.statusText} - ${errorText}`);
   }
-  
+
   const data = await res.json();
+
   return data.records.map(record => ({
     slug: record.fields.Title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, ''),
+      ?.toLowerCase()
+      ?.replace(/\s+/g, '-')
+      ?.replace(/[^a-z0-9-]/g, '')
+      ?.replace(/--+/g, '-')
+      ?.replace(/^-|-$/g, ''),
     title: record.fields.Title,
     location: record.fields.Location,
     startDate: record.fields['Start Date'],
@@ -51,5 +54,6 @@ export async function getEvents() {
     links: record.fields.Links,
     published: record.fields.Published,
     misc: record.fields.Misc,
+    created: record.fields.Created,
   }));
 }
