@@ -1,10 +1,25 @@
 ---
-// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
+import { getEvents } from '../utils/getEvents.ts';
+
+// Fetch latest 3 entries by created time
+const events = await getEvents({
+  sortField: 'Created',
+  sortDirection: 'desc',
+  maxRecords: 3
+});
 ---
+
 <Layout>
   <h1>More Rain</h1>
   <p>Tracking floods, storms, and other major climate events around the world.</p>
 
-  <a href="/browse">Browse All Events</a>
+  <!-- List preview cards -->
+  <ul>
+    {events.map(event => (
+      <li><a href={`/${event.slug}`}>{event.title}</a></li>
+    ))}
+  </ul>
+
+  <a href="/browse">Browse All Events →</a>
 </Layout>
