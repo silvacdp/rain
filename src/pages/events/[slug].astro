@@ -2,6 +2,7 @@
 // src/pages/events/[slug].astro
 
 // 1. Import your Airtable fetch function
+import Layout from '../../layouts/Layout.astro'; // Adjust path as needed
 import { getEvents } from '../../lib/getEvents';
 
 // 2. Tell Astro how to generate all the pages (one per event)
@@ -19,12 +20,12 @@ const { event } = Astro.props;
 ---
 
 <!-- 4. This is the actual HTML of the page -->
-<html>
-  <head><title>{event.title}</title></head>
-  <body>
+<Layout title={event.title}>
+  <main>
     <h1>{event.title}</h1>
-    <p><strong>Date:</strong> {event.date}</p>
+    <p><strong>Date:</strong> {event.startDate}</p>
     <p><strong>Location:</strong> {event.location}</p>
+    {event.imageUrl && <img src={event.imageUrl} alt={event.title} />}
     <p>{event.summary}</p>
-  </body>
-</html>
+  </main>
+</Layout>
