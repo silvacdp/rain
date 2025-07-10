@@ -160,7 +160,7 @@ function countryCodeToFlag(countryCode: string): string {
 // Function to extract country flag from tags
 // Looks through all tags to find country names and returns the appropriate flag
 function getFlagFromTags(tags: string): string {
-  if (!tags) return '🌍'; // Default to globe if no tags
+  if (!tags || typeof tags !== 'string') return '🌍'; // Default to globe if no tags or not a string
   
   // Split tags by common separators (comma, semicolon, pipe)
   const tagList = tags.split(/[,;|]/).map(tag => tag.trim());
