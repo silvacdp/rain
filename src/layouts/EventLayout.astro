@@ -28,21 +28,12 @@ function getCategoryIcon(category: string): string {
 
 
 
-// Function to clean and validate URLs from Airtable
-// Sometimes Airtable data can have invisible characters or formatting issues
+// Function to clean URLs by removing angle brackets and whitespace
+// Airtable sometimes wraps URLs in < > brackets which breaks the links
 function cleanUrl(url: string): string {
-  // Remove all whitespace and invisible characters
-  let cleanedUrl = url.replace(/\s+/g, '').trim();
-  
-  // Remove any potential Unicode characters that might interfere
-  cleanedUrl = cleanedUrl.replace(/[\u200B-\u200D\uFEFF]/g, '');
-  
-  // If the URL doesn't start with http:// or https://, add https://
-  if (!cleanedUrl.startsWith('http://') && !cleanedUrl.startsWith('https://')) {
-    cleanedUrl = 'https://' + cleanedUrl;
-  }
-  
-  return cleanedUrl;
+  return url.trim()
+    .replace(/^</, '')  // Remove opening angle bracket
+    .replace(/>$/, ''); // Remove closing angle bracket
 }
 
 // Function to format tags for display
@@ -172,17 +163,11 @@ const locationIcon = '🌍';
             <div class="links-list">
               {/* Split the links string by commas and create numbered source links */}
               {/* This automatically handles 1, 2, 3, 4, 5+ sources based on your Airtable data */}
-              {/* Temporarily showing the URL for debugging - we can remove this once it's working */}
+              {/* Use cleanUrl to remove the angle brackets that Airtable adds around URLs */}
               {event.links.split(',').map((link: string, index: number) => (
-                <div>
-                  <a href={link.trim()} target="_blank" rel="noopener noreferrer">
-                    Source {index + 1} →
-                  </a>
-                  <br />
-                  <small style="color: #666; font-size: 0.8rem;">
-                    DEBUG: Raw URL = "{link.trim()}"
-                  </small>
-                </div>
+                <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
+                  Source {index + 1} →
+                </a>
               ))}
             </div>
           </div>
