@@ -25,22 +25,6 @@ const featuredEvents = await getEvents({
   <!-- Main container using the same centered layout as EventLayout -->
   <div class="page-container">
     
-    <!-- Hero/Introduction section -->
-    <section class="hero-section">
-      <h1 class="page-title">"More rain fell in 24 hours than in the previous year combined."</h1>
-      <p class="hero-description">
-        Quotes like this one have become all too common in the reporting of climate-related 
-        disasters. Unprecedented levels of rain are happening everywhere around the world, this 
-        site aims to track some of these events. 
-
-        Climate change leads to hotter summers.
-        Hotter summers mean warmer air.
-        Warmer air can hold more moisture.
-        More moisture results in more rain.
-        More rain wreaks havoc all over the globe. 
-      </p>
-    </section>
-    
     <!-- Featured Events section -->
     <section class="featured-section">
       <h2 class="section-title">Latest Events</h2>
@@ -113,31 +97,7 @@ const featuredEvents = await getEvents({
     padding: 0 1rem 2rem; /* Top: 0, sides: 1rem, bottom: 2rem */
     color: var(--white); /* White text using your color variable */
   }
-  
-  /* Hero section styling */
-  .hero-section {
-    margin-bottom: 3rem; /* Space below hero before featured events */
-    text-align: center; /* Center-align the intro content */
-  }
-  
-  /* Main page title */
-  .page-title {
-    font-size: 2rem; /* Large, prominent title */
-    font-weight: 700; /* Bold */
-    color: var(--white); /* White text */
-    margin-bottom: 1.5rem; /* Space below title */
-    line-height: 1.2; /* Tight line height */
-  }
-  
-  /* Hero description text */
-  .hero-description {
-    font-size: 1.1rem; /* Slightly larger than body text */
-    line-height: 1.6; /* Good readability */
-    color: var(--white);
-    max-width: 600px; /* Limit line length for better readability */
-    margin: 0 auto; /* Center the description */
-  }
-  
+
   /* Featured events section */
   .featured-section {
     margin-bottom: 3rem; /* Space below featured section */
