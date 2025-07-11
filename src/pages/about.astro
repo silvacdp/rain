@@ -6,25 +6,24 @@ import Layout from '../layouts/Layout.astro';
 <!-- Use the main Layout component with a descriptive title -->
 <Layout title="More Rain - About">
   
-  <!-- Main container using the same centered layout as EventLayout -->
-  <div class="page-container">
+<!-- Main container using the same centered layout as EventLayout -->
+<div class="page-container">
     
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <h1 class="page-title">About the Site</h1>
-      <p class="hero-description">
-        "More rain fell in 24 hours than in the previous year combined."<br>
-        Quotes like this one have become all too common in the reporting of climate-related 
-        disasters. Unprecedented levels of rain are happening everywhere around the world, this 
-        site aims to track some of these events. <br>
-        <br>
-        Climate change leads to hotter summers. <br>
-        Hotter summers mean warmer air. <br>
-        Warmer air can hold more moisture. <br>
-        More moisture results in more rain. <br>
-        More rain wreaks havoc all over the globe. <br>   
-      </p>
-    </section>
+<section class="featured-section">
+<h2 class="section-title">About the Site</h2>
+  <p class="hero-description">
+    "More rain fell in 24 hours than in the previous year combined."<br>
+    Quotes like this one have become all too common in the reporting of climate-related 
+    disasters. Unprecedented levels of rain are happening everywhere around the world, this 
+    site aims to track some of these events. <br>
+    <br>
+    Climate change leads to hotter summers. <br>
+    Hotter summers mean warmer air. <br>
+    Warmer air can hold more moisture. <br>
+    More moisture results in more rain. <br>
+    More rain wreaks havoc all over the globe. <br>   
+  </p>
+</section>
 
     <!-- Support/Donation section -->
     <section class="support-section">
@@ -70,31 +69,7 @@ import Layout from '../layouts/Layout.astro';
     padding: 0 1rem 2rem; /* Top: 0, sides: 1rem, bottom: 2rem */
     color: var(--white); /* White text using your color variable */
   }
-  
-  /* Hero section styling */
-  .hero-section {
-    margin-bottom: 3rem; /* Space below hero before featured events */
-    text-align: center; /* Center-align the intro content */
-  }
-  
-  /* Main page title */
-  .page-title {
-    font-size: 1.8rem; /* Large, prominent title */
-    font-weight: 600; /* Bold */
-    color: var(--white); /* White text */
-    margin-bottom: 1.5rem; /* Space below title */
-    line-height: 1.2; /* Tight line height */
-  }
-  
-  /* Hero description text */
-  .hero-description {
-    font-size: 1.1rem; /* Slightly larger than body text */
-    line-height: 1.6; /* Good readability */
-    color: var(--platinum); /* Light gray for less prominence than title */
-    max-width: 600px; /* Limit line length for better readability */
-    margin: 0 auto; /* Center the description */
-  }
-  
+
   /* Section titles */
   .section-title {
     font-size: 1.8rem; /* Prominent but smaller than main title */
@@ -103,9 +78,8 @@ import Layout from '../layouts/Layout.astro';
     margin-bottom: 1.5rem; /* Space below section title */
     text-align: center; /* Center-align section titles */
   }
-  
 
-  
+
   /* Support section styling */
   .support-section {
     text-align: center;
@@ -199,8 +173,27 @@ import Layout from '../layouts/Layout.astro';
   .support-alternatives a:hover {
     color: var(--white); /* White on hover */
   }
-  
-  /* Responsive design for smaller screens */
+    
+    
+  /* Section titles */
+  .section-title {
+    font-size: 1.8rem; /* Prominent but smaller than main title */
+    font-weight: 600; /* Semi-bold */
+    color: var(--white); /* White text */
+    margin-bottom: 1.5rem; /* Space below section title */
+    text-align: center; /* Center-align section titles */
+  }
+
+    .donation-links {
+      flex-direction: column; /* Stack buttons vertically on mobile */
+      align-items: center;
+    }
+    
+    .donation-button {
+      width: 100%; /* Full width buttons on mobile */
+      max-width: 300px; /* But not too wide */
+    }
+    /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .page-title {
       font-size: 2rem; /* Smaller title on mobile */
@@ -210,6 +203,10 @@ import Layout from '../layouts/Layout.astro';
       font-size: 1rem; /* Standard size on mobile */
     }
     
+    .events-grid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+      gap: 1.5rem; /* Less gap on mobile */
+    }
     
     .section-title {
       font-size: 1.5rem; /* Smaller section titles on mobile */
