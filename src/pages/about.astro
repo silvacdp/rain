@@ -12,17 +12,20 @@ import Layout from '../layouts/Layout.astro';
 <section class="featured-section">
 <h2 class="section-title">About the Site</h2>
   <p class="hero-description">
-    "More rain fell in 24 hours than in the previous year combined."<br>
-    Quotes like this one have become all too common in the reporting of climate-related 
-    disasters. Unprecedented levels of rain are happening everywhere around the world, this 
-    site aims to track some of these events. <br>
-    <br>
-    Climate change leads to hotter summers. <br>
-    Hotter summers mean warmer air. <br>
-    Warmer air can hold more moisture. <br>
-    More moisture results in more rain. <br>
-    More rain wreaks havoc all over the globe. <br>   
-  </p>
+  You've probably read the line:  
+  <br><strong>“More rain fell in 24 hours than in the last year combined.”</strong><br>
+  Or maybe it was 48 hours. Or 72. And the comparison was to the past 6 months, 18 months, or even longer.<br><br>
+
+  This kind of phrasing shows up again and again in climate disaster reporting — a sign of how extreme and frequent these events are becoming.  
+  This site exists to track and document them.<br><br>
+
+  <span class="climate-chain">
+    <span class="key climate">Climate change</span> leads to <span class="key heat">hotter air</span>.<br>
+    <span class="key heat">Hotter air</span> holds more <span class="key moisture">moisture</span>.<br>
+    More <span class="key moisture">moisture</span> means <span class="key rain">more rain</span> when storms hit.<br>
+    And <span class="key rain">more rain</span> brings <span class="key impact">catastrophic flooding</span> around the world.
+  </span>
+</p>
 </section>
 
     <!-- Support/Donation section -->
@@ -193,6 +196,33 @@ import Layout from '../layouts/Layout.astro';
       width: 100%; /* Full width buttons on mobile */
       max-width: 300px; /* But not too wide */
     }
+
+/* Highlight key climate chain terms with meaningful color */
+.key {
+  font-weight: 600;
+}
+
+.climate {
+  color: var(--orange); /* Not sure what color to do for climate */
+}
+
+.heat {
+  color: var(--orange); /* Calls attention to heat */
+}
+
+.moisture {
+  color: var(--orange); /* Not sure what color to do for moisture */
+}
+
+.rain {
+  color: var(--orange); /* Should be blue or something, but will be tricky with dark blue background */
+}
+
+.impact {
+  color: var(--orange); /* Probably red for a sense of danger/catastrophe */
+}
+
+
     /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .page-title {
