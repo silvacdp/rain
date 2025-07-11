@@ -4,8 +4,72 @@ import EventCard from '../layouts/EventCard.astro';
 
 // Load events dynamically from Airtable via server-side utility
 import { getEvents } from '../lib/getEvents.ts';
-const events = await getEvents();
+
+// Get the full URL from Astro
+const url = new URL(Astro.request.url);
+
+// Extract each query param (or fallback to default if missing)
+const search = url.searchParams.get('search')?.toLowerCase() || '';
+const category = url.searchParams.get('category') || '';
+const sort = url.searchParams.get('sort') || 'desc';
+
+// Build Airtable filter formula from query params
+const filters = [];
+
+if (search) {
+  filters.push(`FIND(LOWER("${search}"), LOWER({Title} & {Summary} & {Quote}))`);
+}
+if (category) {
+  filters.push(`{Category} = "${category}"`);
+}
+
+// If multiple filters, wrap them in AND()
+const formula = filters.length > 1
+  ? `AND(${filters.join(', ')})`
+  : filters[0] || '';
+
+// Build Airtable filter formula from query params
+const filters = [];
+
+if (search) {
+  filters.push(`FIND(LOWER("${search}"), LOWER({Title} & {Summary} & {Quote}))`);
+}
+if (category) {
+  filters.push(`{Category} = "${category}"`);
+}
+
+// If multiple filters, wrap them in AND()
+const formula = filters.length > 1
+  ? `AND(${filters.join(', ')})`
+  : filters[0] || '';
+
 ---
+
+<form method="GET" class="event-filter-form">
+  <input 
+    type="text" 
+    name="search" 
+    value={search} 
+    placeholder="Search events..." 
+    aria-label="Search"
+  />
+
+  <select name="category">
+    <option value="">All Categories</option>
+    <option value="Rain/Flood" selected={category === 'Rain/Flood'}>Rain/Flood</option>
+    <option value="Heatwave" selected={category === 'Heatwave'}>Heatwave</option>
+    <option value="Wildfire" selected={category === 'Wildfire'}>Wildfire</option>
+    <option value="Other" selected={category === 'Other'}>Other</option>
+  </select>
+
+  <select name="sort">
+    <option value="desc" selected={sort === 'desc'}>Newest First</option>
+    <option value="asc" selected={sort === 'asc'}>Oldest First</option>
+  </select>
+
+  <button type="submit">Apply</button>
+</form>
+
 
 <!-- Page layout wrapper -->
 <Layout title="All Events">
@@ -44,3 +108,29 @@ const events = await getEvents();
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 </style>
+
+<style>
+  .event-filter-form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    align-items: center;
+  }
+
+  .event-filter-form input,
+  .event-filter-form select,
+  .event-filter-form button {
+    padding: 0.5rem;
+    background-color: rgba(var(--whitergb), 0.05);
+    color: var(--white);
+    border: 1px solid rgba(var(--whitergb), 0.2);
+    border-radius: 4px;
+  }
+
+  .event-filter-form button {
+    background-color: rgba(var(--orangergb), 0.2);
+    cursor: pointer;
+  }
+</style>
+
