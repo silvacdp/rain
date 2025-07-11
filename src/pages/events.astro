@@ -21,6 +21,10 @@ const allEvents = await getEvents({
 // Extract unique categories from all events for the filter dropdown
 // This ensures the filter only shows categories that actually exist in your data
 const uniqueCategories = [...new Set(allEvents.map(event => event.category).filter(Boolean))];
+
+// Serialize events data for JavaScript (this is the key fix)
+// We need to safely pass the server data to the client-side script
+const eventsDataForJS = JSON.stringify(allEvents);
 ---
 
 <!-- Use the main Layout component with a descriptive title -->
@@ -40,6 +44,18 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     <!-- Filter and sort controls -->
     <section class="filter-section">
       <div class="filter-controls">
+        
+        <!-- Search input (new feature) -->
+        <div class="filter-group">
+          <label for="search-input" class="filter-label">Search:</label>
+          <input 
+            type="text" 
+            id="search-input" 
+            class="filter-input" 
+            placeholder="Search events..."
+            autocomplete="off"
+          />
+        </div>
         
         <!-- Sort dropdown -->
         <div class="filter-group">
@@ -112,6 +128,10 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     </section>
     
   </div>
+
+  <!-- FIXED: Hidden script tag to pass data to JavaScript -->
+  <!-- This is the proper way to pass server-side data to client-side JS in Astro -->
+  <script type="application/json" id="events-data" set:html={eventsDataForJS}></script>
 </Layout>
 
 <style>
@@ -168,7 +188,7 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
   /* Individual filter group styling */
   .filter-group {
     display: flex;
-    flex-direction: column; /* Stack label above select */
+    flex-direction: column; /* Stack label above input/select */
     min-width: 150px; /* Minimum width for consistency */
   }
   
@@ -180,24 +200,50 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     margin-bottom: 0.5rem; /* Space below label */
   }
   
-  /* Filter select dropdowns */
+  /* Filter select dropdowns - FIXED STYLING */
   .filter-select {
     padding: 0.5rem 0.75rem; /* Generous padding */
-    background-color: rgba(var(--whitergb), 0.1); /* Subtle background */
-    border: 1px solid rgba(var(--whitergb), 0.2); /* Subtle border */
+    background-color: var(--blue); /* Dark blue background for contrast */
+    border: 1px solid rgba(var(--whitergb), 0.3); /* More visible border */
     border-radius: 4px; /* Rounded corners */
-    color: var(--white); /* White text */
+    color: var(--white); /* White text for readability */
     font-size: 0.9rem; /* Consistent font size */
     cursor: pointer; /* Pointer cursor */
     transition: all 0.2s ease; /* Smooth transitions */
   }
   
-  /* Select dropdown focus/hover states */
+  /* Fix for dropdown options - ensure they're readable */
+  .filter-select option {
+    background-color: var(--blue); /* Dark background for options */
+    color: var(--white); /* White text for options */
+    padding: 0.5rem; /* Padding for options */
+  }
+  
+  /* Search input styling (new) */
+  .filter-input {
+    padding: 0.5rem 0.75rem; /* Same padding as selects */
+    background-color: var(--blue); /* Dark blue background */
+    border: 1px solid rgba(var(--whitergb), 0.3); /* Visible border */
+    border-radius: 4px; /* Rounded corners */
+    color: var(--white); /* White text */
+    font-size: 0.9rem; /* Consistent font size */
+    transition: all 0.2s ease; /* Smooth transitions */
+  }
+  
+  /* Search input placeholder styling */
+  .filter-input::placeholder {
+    color: var(--platinum); /* Light gray placeholder */
+    opacity: 0.7; /* Slightly transparent */
+  }
+  
+  /* Focus states for inputs and selects */
   .filter-select:focus,
-  .filter-select:hover {
+  .filter-select:hover,
+  .filter-input:focus,
+  .filter-input:hover {
     border-color: var(--orange); /* Orange border on focus */
     outline: none; /* Remove default outline */
-    background-color: rgba(var(--whitergb), 0.15); /* Slightly lighter background */
+    background-color: rgba(var(--whitergb), 0.1); /* Slightly lighter background */
   }
   
   /* Clear filters button */
@@ -358,6 +404,74 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     color: var(--blue); /* Blue text for contrast */
   }
   
+  /* Additional styles for the custom event cards created by JavaScript */
+  .event-card {
+    background-color: rgba(var(--whitergb), 0.05); /* Subtle background */
+    border: 1px solid rgba(var(--whitergb), 0.1); /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure images fit properly */
+    transition: all 0.2s ease; /* Smooth transitions */
+  }
+  
+  .event-card:hover {
+    transform: translateY(-2px); /* Slight lift effect */
+    border-color: var(--orange); /* Orange border on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  }
+  
+  .card-link {
+    display: block; /* Full card is clickable */
+    text-decoration: none; /* Remove link underline */
+    color: inherit; /* Inherit text color */
+  }
+  
+  .card-image {
+    width: 100%; /* Full width */
+    height: 200px; /* Fixed height for consistency */
+    overflow: hidden; /* Crop images if needed */
+  }
+  
+  .card-image img {
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    object-fit: cover; /* Crop to fit */
+  }
+  
+  .card-content {
+    padding: 1.5rem; /* Generous padding */
+  }
+  
+  .card-title {
+    font-size: 1.25rem; /* Larger title */
+    font-weight: 600; /* Semi-bold */
+    color: var(--white); /* White text */
+    margin-bottom: 0.75rem; /* Space below title */
+    line-height: 1.3; /* Good line height */
+  }
+  
+  .card-meta {
+    display: flex;
+    flex-direction: column; /* Stack meta items vertically */
+    gap: 0.5rem; /* Space between meta items */
+    margin-bottom: 1rem; /* Space below meta */
+    font-size: 0.9rem; /* Smaller text */
+    color: var(--platinum); /* Light gray */
+  }
+  
+  .card-quote {
+    font-style: italic; /* Italic text */
+    color: var(--orange); /* Orange color for quotes */
+    margin-bottom: 1rem; /* Space below quote */
+    padding-left: 1rem; /* Indent quote */
+    border-left: 2px solid var(--orange); /* Orange left border */
+  }
+  
+  .card-summary {
+    color: var(--platinum); /* Light gray */
+    line-height: 1.5; /* Good readability */
+    margin-bottom: 0; /* No bottom margin */
+  }
+  
   /* Responsive design for smaller screens */
   @media (max-width: 768px) {
     .page-container {
@@ -402,9 +516,9 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
   // Client-side JavaScript for filtering, sorting, and pagination
   // This runs after the page loads and provides interactive functionality
   
-  // Get all the events data from the server-rendered HTML
-  // We'll extract this from the DOM to avoid duplicating data
-  const allEventsData = {allEvents};
+  // FIXED: Get all the events data from the server (properly serialized)
+  // This is the key fix - we now properly pass data from Astro to JavaScript
+  const allEventsData = JSON.parse(document.getElementById('events-data').textContent);
   
   // Configuration for pagination
   const EVENTS_PER_PAGE = 12; // Number of events to show per page
@@ -414,7 +528,8 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
   let filteredEvents = [...allEventsData]; // Start with all events
   let currentFilters = {
     sort: 'newest',
-    category: ''
+    category: '',
+    search: '' // New: search filter
   };
   
   // Category colors for placeholder images
@@ -454,14 +569,17 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     
     const end = new Date(endDate);
     
+    // Same month and year - show "Month 1-5, Year"
     if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
       return `${start.toLocaleDateString('en-US', { month: 'long' })} ${start.getDate()}-${end.getDate()}, ${start.getFullYear()}`;
     }
     
+    // Same year - show "Month 1 - Month 5, Year"
     if (start.getFullYear() === end.getFullYear()) {
       return `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, ${start.getFullYear()}`;
     }
     
+    // Different years - show full dates
     return `${start.toLocaleDateString('en-US', startOptions)} - ${end.toLocaleDateString('en-US', startOptions)}`;
   }
   
@@ -477,7 +595,7 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     const icon = getCategoryIcon(category);
     
     return `
-      <div class="placeholder-image" style="background-color: ${color}; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+      <div class="placeholder-image" style="background-color: ${color}; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; border-radius: 8px;">
         ${icon}
       </div>
     `;
@@ -493,12 +611,12 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
         <a href="/events/${event.slug}" class="card-link">
           <div class="card-image">
             ${event.imageUrl ? 
-              `<img src="${event.imageUrl}" alt="${event.title}" loading="lazy" />` : 
+              `<img src="${event.imageUrl}" alt="${event.title || 'Event image'}" loading="lazy" />` : 
               createPlaceholderImage(event.category)
             }
           </div>
           <div class="card-content">
-            <h3 class="card-title">${event.title}</h3>
+            <h3 class="card-title">${event.title || 'Untitled Event'}</h3>
             <div class="card-meta">
               ${formattedDate ? `<span class="card-date">📅 ${formattedDate}</span>` : ''}
               ${event.location ? `<span class="card-location">🌍 ${event.location}</span>` : ''}
@@ -518,28 +636,57 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     
     switch (sortOption) {
       case 'newest':
-        return sortedEvents.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        // Sort by start date, newest first
+        return sortedEvents.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
       case 'oldest':
-        return sortedEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        // Sort by start date, oldest first
+        return sortedEvents.sort((a, b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
       case 'a-z':
-        return sortedEvents.sort((a, b) => a.title.localeCompare(b.title));
+        // Sort alphabetically by title
+        return sortedEvents.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
       case 'z-a':
-        return sortedEvents.sort((a, b) => b.title.localeCompare(a.title));
+        // Sort reverse alphabetically by title
+        return sortedEvents.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
       default:
         return sortedEvents;
     }
+  }
+  
+  // Function to search events across all text fields
+  function searchEvents(events, searchTerm) {
+    if (!searchTerm.trim()) return events;
+    
+    const term = searchTerm.toLowerCase().trim();
+    
+    return events.filter(event => {
+      // Search through title, summary, location, category, and quote
+      const searchableText = [
+        event.title,
+        event.summary,
+        event.location,
+        event.category,
+        event.quote
+      ].filter(Boolean).join(' ').toLowerCase();
+      
+      return searchableText.includes(term);
+    });
   }
   
   // Function to filter events based on selected criteria
   function filterEvents() {
     let filtered = [...allEventsData];
     
+    // Apply search filter first (most restrictive)
+    if (currentFilters.search) {
+      filtered = searchEvents(filtered, currentFilters.search);
+    }
+    
     // Apply category filter if selected
     if (currentFilters.category) {
       filtered = filtered.filter(event => event.category === currentFilters.category);
     }
     
-    // Apply sorting
+    // Apply sorting last
     filtered = sortEvents(filtered, currentFilters.sort);
     
     return filtered;
@@ -547,19 +694,26 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
   
   // Function to update the events display
   function updateEventsDisplay() {
-    // Show loading message
+    // Show loading message briefly for better UX
     document.getElementById('loading-message').style.display = 'block';
     document.getElementById('events-grid').style.display = 'none';
     document.getElementById('no-results').style.display = 'none';
     
-    // Small delay to show loading state
+    // Use setTimeout to prevent blocking the UI
     setTimeout(() => {
       // Filter and sort events
       filteredEvents = filterEvents();
       
       // Update results counter
       const resultsCount = document.getElementById('results-count');
-      resultsCount.textContent = `Showing ${filteredEvents.length} events`;
+      const searchTerm = currentFilters.search;
+      const categoryFilter = currentFilters.category;
+      
+      let statusText = `Showing ${filteredEvents.length} events`;
+      if (searchTerm || categoryFilter) {
+        statusText += ' (filtered)';
+      }
+      resultsCount.textContent = statusText;
       
       // Check if we have any results
       if (filteredEvents.length === 0) {
@@ -581,7 +735,7 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
       document.getElementById('loading-message').style.display = 'none';
       document.getElementById('events-grid').style.display = 'grid';
       document.getElementById('no-results').style.display = 'none';
-    }, 100);
+    }, 50); // Short delay to show loading state
   }
   
   // Function to display events for the current page
@@ -596,8 +750,11 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     // Update the events grid
     document.getElementById('events-grid').innerHTML = eventsHTML;
     
-    // Scroll to top of events section
-    document.querySelector('.events-section').scrollIntoView({ behavior: 'smooth' });
+    // Scroll to top of events section smoothly
+    document.querySelector('.events-section').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
   }
   
   // Function to update pagination controls
@@ -605,13 +762,16 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
     const totalPages = Math.ceil(filteredEvents.length / EVENTS_PER_PAGE);
     
     // Update page info
-    document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById('page-info').textContent = filteredEvents.length > 0 ? `Page ${currentPage} of ${totalPages}` : 'Page 0 of 0';
     
     // Update previous/next buttons
-    document.getElementById('prev-page').disabled = currentPage === 1;
-    document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
     
-    // Generate page numbers
+    prevButton.disabled = currentPage <= 1;
+    nextButton.disabled = currentPage >= totalPages;
+    
+    // Generate page number buttons
     const pageNumbers = document.getElementById('page-numbers');
     pageNumbers.innerHTML = '';
     
@@ -625,6 +785,7 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
       startPage = Math.max(1, endPage - maxPageNumbers + 1);
     }
     
+    // Add page number buttons
     for (let i = startPage; i <= endPage; i++) {
       const pageButton = document.createElement('button');
       pageButton.textContent = i;
@@ -636,49 +797,62 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
       });
       pageNumbers.appendChild(pageButton);
     }
+    
+    // Hide pagination if only one page
+    const paginationSection = document.querySelector('.pagination-section');
+    paginationSection.style.display = totalPages <= 1 ? 'none' : 'flex';
   }
   
-  // Initialize the page when DOM is loaded
-  document.addEventListener('DOMContentLoaded', () => {
-    // Get filter elements
-    const sortSelect = document.getElementById('sort-select');
-    const categorySelect = document.getElementById('category-select');
-    const clearButton = document.getElementById('clear-filters');
-    const resetButton = document.getElementById('reset-filters');
+  // Function to clear all filters
+  function clearFilters() {
+    currentFilters = {
+      sort: 'newest',
+      category: '',
+      search: ''
+    };
     
-    // Get pagination elements
-    const prevButton = document.getElementById('prev-page');
-    const nextButton = document.getElementById('next-page');
+    // Reset form elements
+    document.getElementById('sort-select').value = 'newest';
+    document.getElementById('category-select').value = '';
+    document.getElementById('search-input').value = '';
     
-    // Set up event listeners for filters
-    sortSelect.addEventListener('change', (e) => {
+    // Update display
+    updateEventsDisplay();
+  }
+  
+  // Initialize event handlers when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // Sort dropdown handler
+    document.getElementById('sort-select').addEventListener('change', function(e) {
       currentFilters.sort = e.target.value;
       updateEventsDisplay();
     });
     
-    categorySelect.addEventListener('change', (e) => {
+    // Category dropdown handler
+    document.getElementById('category-select').addEventListener('change', function(e) {
       currentFilters.category = e.target.value;
       updateEventsDisplay();
     });
     
-    // Clear filters button
-    clearButton.addEventListener('click', () => {
-      sortSelect.value = 'newest';
-      categorySelect.value = '';
-      currentFilters = { sort: 'newest', category: '' };
-      updateEventsDisplay();
+    // Search input handler with debouncing for performance
+    let searchTimeout;
+    document.getElementById('search-input').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentFilters.search = e.target.value;
+        updateEventsDisplay();
+      }, 300); // 300ms delay for better performance
     });
     
-    // Reset filters button (in no-results section)
-    resetButton.addEventListener('click', () => {
-      sortSelect.value = 'newest';
-      categorySelect.value = '';
-      currentFilters = { sort: 'newest', category: '' };
-      updateEventsDisplay();
-    });
+    // Clear filters button handler
+    document.getElementById('clear-filters').addEventListener('click', clearFilters);
     
-    // Set up pagination event listeners
-    prevButton.addEventListener('click', () => {
+    // Reset filters button handler (in no-results section)
+    document.getElementById('reset-filters').addEventListener('click', clearFilters);
+    
+    // Pagination button handlers
+    document.getElementById('prev-page').addEventListener('click', function() {
       if (currentPage > 1) {
         currentPage--;
         displayCurrentPage();
@@ -686,7 +860,7 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
       }
     });
     
-    nextButton.addEventListener('click', () => {
+    document.getElementById('next-page').addEventListener('click', function() {
       const totalPages = Math.ceil(filteredEvents.length / EVENTS_PER_PAGE);
       if (currentPage < totalPages) {
         currentPage++;
@@ -695,7 +869,8 @@ const uniqueCategories = [...new Set(allEvents.map(event => event.category).filt
       }
     });
     
-    // Initialize the display
+    // Initialize the page with all events
     updateEventsDisplay();
   });
+  
 </script>
