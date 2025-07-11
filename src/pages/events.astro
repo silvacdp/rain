@@ -2,8 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 import EventCard from '../layouts/EventCard.astro';
 
-// Assume this gets event data from somewhere (local or API)
-import events from '../data/events.js';
+// Load events dynamically from Airtable via server-side utility
+import getEvents from '../utils/getEvents.ts';
+const events = await getEvents();
 ---
 
 <!-- Page layout wrapper -->
