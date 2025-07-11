@@ -28,23 +28,19 @@ const formula = filters.length > 1
   ? `AND(${filters.join(', ')})`
   : filters[0] || '';
 
-// Build Airtable filter formula from query params
-const filters = [];
-
-if (search) {
-  filters.push(`FIND(LOWER("${search}"), LOWER({Title} & {Summary} & {Quote}))`);
-}
-if (category) {
-  filters.push(`{Category} = "${category}"`);
-}
-
-// If multiple filters, wrap them in AND()
-const formula = filters.length > 1
-  ? `AND(${filters.join(', ')})`
-  : filters[0] || '';
+const events = await getEvents({
+  sortDirection: sort,
+  filters: formula,
+});
 
 ---
 
+<!-- Page layout wrapper -->
+<Layout title="All Events">
+  <main class="page-container">
+    <h2 class="page-title">All Events</h2>
+
+<!-- Filter/Search Form -->
 <form method="GET" class="event-filter-form">
   <input 
     type="text" 
@@ -69,12 +65,6 @@ const formula = filters.length > 1
 
   <button type="submit">Apply</button>
 </form>
-
-
-<!-- Page layout wrapper -->
-<Layout title="All Events">
-  <main class="page-container">
-    <h2 class="page-title">All Events</h2>
 
     <!-- Events Grid -->
     <section class="event-grid">
