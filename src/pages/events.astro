@@ -1,22 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import EventCard from '../layouts/EventCard.astro';
-
-// Load events dynamically from Airtable via server-side utility
 import { getEvents } from '../lib/getEvents.ts';
-
-console.log('Search:', search);
-console.log('Category:', category);
-console.log('Sort:', sort);
-console.log('Airtable filter formula:', formula);
-
-const events = await getEvents({
-  sortDirection: sort,
-  filters: formula,
-});
-
-console.log('Fetched events count:', events.length);
-
 
 // Get the full URL from Astro
 const url = new URL(Astro.request.url);
@@ -41,7 +26,17 @@ const formula = filters.length > 1
   ? `AND(${filters.join(', ')})`
   : filters[0] || '';
 
+console.log('Search:', search);
+console.log('Category:', category);
+console.log('Sort:', sort);
+console.log('Airtable filter formula:', formula);
 
+const events = await getEvents({
+  sortDirection: sort,
+  filters: formula,
+});
+
+console.log('Fetched events count:', events.length);
 ---
 
 <!-- Page layout wrapper -->
