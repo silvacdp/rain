@@ -1,7 +1,7 @@
 ---
 // src/pages/index.astro
 // Home page with featured events in card format
-// Shows site introduction, 3 latest events, and donation section
+// Shows site introduction, 4 latest events, and donation section
 
 // Import the main Layout component for consistent site structure
 import Layout from '../layouts/Layout.astro';
@@ -10,12 +10,12 @@ import EventCard from '../layouts/EventCard.astro';
 // Import the function to fetch events from Airtable
 import { getEvents } from '../lib/getEvents.ts';
 
-// Fetch the latest 3 events by creation date for the featured section
+// Fetch the latest 4 events by creation date for the featured section
 // This ensures the most recently added events are highlighted
 const featuredEvents = await getEvents({
   sortField: 'Created',
   sortDirection: 'desc',
-  maxRecords: 3
+  maxRecords: 4
 });
 ---
 
