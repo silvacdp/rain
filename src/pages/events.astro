@@ -41,10 +41,6 @@ const formula = filters.length > 1
   ? `AND(${filters.join(', ')})`
   : filters[0] || '';
 
-const events = await getEvents({
-  sortDirection: sort,
-  filters: formula,
-});
 
 ---
 
