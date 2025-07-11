@@ -2,8 +2,219 @@
 // src/pages/about.astro
 import Layout from '../layouts/Layout.astro';
 ---
-<Layout>
-  <h1>About</h1>
-  <p>This site documents significant climate-related events with data sourced from news reports, social media, and public datasets.</p>
-  <p>Created by Felipe. Not affiliated with any institution. Just trying to make sense of the chaos.</p>
+
+<!-- Use the main Layout component with a descriptive title -->
+<Layout title="More Rain - About">
+  
+  <!-- Main container using the same centered layout as EventLayout -->
+  <div class="page-container">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <h1 class="page-title">About the Site</h1>
+      <p class="hero-description">
+        This site documents significant climate-related events with data sourced from news reports, social media, and public datasets.
+        TCreated by Felipe. Not affiliated with any institution. Just trying to make sense of the chaos. 
+      </p>
+    </section>
+    
+    <!-- Support/Donation section -->
+    <section class="support-section">
+      <h2 class="section-title">Support This Project</h2>
+      <p class="support-description">
+        This site is maintained independently. If you find this resource valuable, 
+        consider supporting the ongoing documentation of climate events.
+      </p>
+      
+      <!-- Donation links container -->
+      <div class="donation-links">
+        <!-- PayPal donation button - replace with your actual PayPal link -->
+        <a href="https://www.paypal.com/donate" class="donation-button paypal-button" target="_blank" rel="noopener noreferrer">
+          💳 Donate via PayPal
+        </a>
+        
+        <!-- Ko-fi donation button - replace with your actual Ko-fi link -->
+        <a href="https://ko-fi.com" class="donation-button kofi-button" target="_blank" rel="noopener noreferrer">
+          ☕ Buy me a coffee
+        </a>
+        
+        <!-- GitHub Sponsors - replace with your actual GitHub Sponsors link -->
+        <a href="https://github.com/sponsors" class="donation-button github-button" target="_blank" rel="noopener noreferrer">
+          ⭐ GitHub Sponsors
+        </a>
+      </div>
+      
+      <!-- Alternative support options -->
+      <p class="support-alternatives">
+        You can also help by <a href="mailto:silvacdp@gmail.com?subject=Suggestion%20of%20Event">suggesting events</a> 
+        or sharing this resource with others interested in climate documentation.
+      </p>
+    </section>
+    
+  </div>
 </Layout>
+
+<style>
+  /* Main page container using the same pattern as EventLayout */
+  .page-container {
+    max-width: 800px; /* Matches your EventLayout container width */
+    margin: 0 auto; /* Centers the container horizontally */
+    padding: 0 1rem 2rem; /* Top: 0, sides: 1rem, bottom: 2rem */
+    color: var(--white); /* White text using your color variable */
+  }
+  
+  /* Hero section styling */
+  .hero-section {
+    margin-bottom: 3rem; /* Space below hero before featured events */
+    text-align: center; /* Center-align the intro content */
+  }
+  
+  /* Main page title */
+  .page-title {
+    font-size: 2.5rem; /* Large, prominent title */
+    font-weight: 700; /* Bold */
+    color: var(--white); /* White text */
+    margin-bottom: 1.5rem; /* Space below title */
+    line-height: 1.2; /* Tight line height */
+  }
+  
+  /* Hero description text */
+  .hero-description {
+    font-size: 1.1rem; /* Slightly larger than body text */
+    line-height: 1.6; /* Good readability */
+    color: var(--platinum); /* Light gray for less prominence than title */
+    max-width: 600px; /* Limit line length for better readability */
+    margin: 0 auto; /* Center the description */
+  }
+  
+  /* Section titles */
+  .section-title {
+    font-size: 1.8rem; /* Prominent but smaller than main title */
+    font-weight: 600; /* Semi-bold */
+    color: var(--white); /* White text */
+    margin-bottom: 1.5rem; /* Space below section title */
+    text-align: center; /* Center-align section titles */
+  }
+  
+
+  
+  /* Support section styling */
+  .support-section {
+    text-align: center;
+    padding: 2rem 0; /* Vertical padding */
+    border-top: 1px solid rgba(var(--whitergb), 0.2); /* Subtle top border */
+  }
+  
+  /* Support description text */
+  .support-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--platinum); /* Light gray */
+    margin-bottom: 2rem;
+    max-width: 500px; /* Limit line length */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Donation links container */
+  .donation-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* Space between buttons */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Base donation button styling */
+  .donation-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem; /* Generous padding */
+    text-decoration: none;
+    border-radius: 6px; /* Rounded corners */
+    font-weight: 500; /* Medium weight */
+    transition: all 0.2s ease; /* Smooth hover animation */
+    border: 2px solid transparent; /* Transparent border for consistent sizing */
+  }
+  
+  /* PayPal button styling */
+  .paypal-button {
+    background-color: #0070ba; /* PayPal blue */
+    color: white;
+    border-color: #0070ba;
+  }
+  
+  .paypal-button:hover {
+    background-color: #005ea6; /* Darker PayPal blue */
+    border-color: #005ea6;
+    transform: translateY(-1px); /* Slight lift effect */
+  }
+  
+  /* Ko-fi button styling */
+  .kofi-button {
+    background-color: #ff5e5b; /* Ko-fi red */
+    color: white;
+    border-color: #ff5e5b;
+  }
+  
+  .kofi-button:hover {
+    background-color: #ff4c4a; /* Darker Ko-fi red */
+    border-color: #ff4c4a;
+    transform: translateY(-1px); /* Slight lift effect */
+  }
+  
+  /* GitHub Sponsors button styling */
+  .github-button {
+    background-color: #6f42c1; /* GitHub purple */
+    color: white;
+    border-color: #6f42c1;
+  }
+  
+  .github-button:hover {
+    background-color: #5a32a3; /* Darker GitHub purple */
+    border-color: #5a32a3;
+    transform: translateY(-1px); /* Slight lift effect */
+  }
+  
+  /* Alternative support options text */
+  .support-alternatives {
+    font-size: 0.9rem;
+    color: var(--platinum); /* Light gray */
+    line-height: 1.5;
+  }
+  
+  /* Links within support alternatives */
+  .support-alternatives a {
+    color: var(--orange); /* Orange accent */
+    text-decoration: underline;
+  }
+  
+  .support-alternatives a:hover {
+    color: var(--white); /* White on hover */
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 2rem; /* Smaller title on mobile */
+    }
+    
+    .hero-description {
+      font-size: 1rem; /* Standard size on mobile */
+    }
+    
+    
+    .section-title {
+      font-size: 1.5rem; /* Smaller section titles on mobile */
+    }
+    
+    .donation-links {
+      flex-direction: column; /* Stack buttons vertically on mobile */
+      align-items: center;
+    }
+    
+    .donation-button {
+      width: 100%; /* Full width buttons on mobile */
+      max-width: 300px; /* But not too wide */
+    }
+  }
+</style>
