@@ -1,0 +1,287 @@
+---
+// src/components/EventCard.astro
+// Reusable card component for displaying event previews
+// Used on both the home page and events listing page
+
+// Define the props interface for type safety
+interface Props {
+  event: {
+    title: string;
+    slug: string;
+    startDate: string;
+    endDate?: string;
+    location?: string;
+    category?: string;
+    summary?: string;
+    quote?: string;
+    imageUrl?: string;
+    imageSource?: string;
+    tags?: string | string[];
+  };
+  // Optional prop to show full summary or truncated version
+  showFullSummary?: boolean;
+}
+
+// Extract props with default values
+const { event, showFullSummary = true } = Astro.props;
+
+// Function to get the appropriate icon for each event category
+// This matches your exact Airtable category values
+function getCategoryIcon(category: string): string {
+  switch (category) {
+    case 'Rain/Flood':
+      return '🌧️'; // Rain cloud for rain/flood events
+    case 'Heatwave':
+      return '🌡️'; // Thermometer for extreme heat events
+    case 'Wildfire':
+      return '🔥'; // Fire emoji for wildfire events
+    case 'Other':
+      return '⚠️'; // Warning triangle for miscellaneous climate events
+    default:
+      return '🌍'; // Globe as ultimate fallback
+  }
+}
+
+// Function to format date ranges in a human-readable way
+// Same logic as in EventLayout.astro for consistency
+function formatDateRange(startDate: string, endDate?: string): string {
+  if (!startDate) return '';
+  
+  const start = new Date(startDate);
+  const startOptions: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  
+  // If no end date, just return the start date
+  if (!endDate) {
+    return start.toLocaleDateString('en-US', startOptions);
+  }
+  
+  const end = new Date(endDate);
+  
+  // If same month and year, show "July 7-10, 2025"
+  if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+    return `${start.toLocaleDateString('en-US', { month: 'long' })} ${start.getDate()}-${end.getDate()}, ${start.getFullYear()}`;
+  }
+  
+  // If different months, show "July 7 - August 3, 2025"
+  if (start.getFullYear() === end.getFullYear()) {
+    return `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, ${start.getFullYear()}`;
+  }
+  
+  // If different years, show full dates
+  return `${start.toLocaleDateString('en-US', startOptions)} - ${end.toLocaleDateString('en-US', startOptions)}`;
+}
+
+// Function to truncate text to a reasonable length for card display
+// Only used when showFullSummary is false
+function truncateText(text: string, maxLength: number = 150): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength).trim() + '...';
+}
+
+// Process the formatted date for display
+const formattedDate = formatDateRange(event.startDate, event.endDate);
+
+// Simple globe emoji for all locations - keeps it clean and consistent
+const locationIcon = '🌍';
+
+// Determine what summary text to show based on showFullSummary prop
+const displaySummary = showFullSummary ? event.summary : (event.summary ? truncateText(event.summary) : '');
+---
+
+<!-- Event card container - this is a clickable link to the full event page -->
+<article class="event-card">
+  <!-- Link wrapper that makes the entire card clickable -->
+  <a href={`/events/${event.slug}`} class="card-link">
+    
+    <!-- Image section - only displays if an image URL exists -->
+    {event.imageUrl && (
+      <div class="card-image">
+        <!-- Event image with consistent sizing using CSS object-fit -->
+        <img 
+          src={event.imageUrl} 
+          alt={event.title}
+          loading="lazy"
+        />
+      </div>
+    )}
+    
+    <!-- Card content section -->
+    <div class="card-content">
+      
+      <!-- Event title -->
+      <h3 class="card-title">{event.title}</h3>
+      
+      <!-- Meta information section (date, location, category) -->
+      <div class="card-meta">
+        {/* Display formatted date range if available */}
+        {formattedDate && <span class="card-date">📅 {formattedDate}</span>}
+        
+        {/* Display location with globe icon */}
+        {event.location && (
+          <span class="card-location">
+            {locationIcon} {event.location}
+          </span>
+        )}
+        
+        {/* Display category with appropriate icon */}
+        {event.category && (
+          <span class="card-category">
+            {getCategoryIcon(event.category)} {event.category}
+          </span>
+        )}
+      </div>
+      
+      <!-- Quote section - displays an impactful quote if available -->
+      {event.quote && (
+        <blockquote class="card-quote">
+          "{event.quote}"
+        </blockquote>
+      )}
+      
+      <!-- Summary section - shows either full or truncated summary -->
+      {displaySummary && (
+        <p class="card-summary">{displaySummary}</p>
+      )}
+      
+    </div>
+  </a>
+</article>
+
+<style>
+  /* Main event card container */
+  .event-card {
+    /* Use CSS Grid for consistent card sizing */
+    display: block;
+    background-color: rgba(var(--whitergb), 0.05); /* Very subtle white background */
+    border: 1px solid rgba(var(--whitergb), 0.1); /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensures content doesn't overflow rounded corners */
+    transition: all 0.2s ease; /* Smooth hover animation */
+    height: 100%; /* Full height within grid container */
+  }
+  
+  /* Hover effect for the entire card */
+  .event-card:hover {
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 8px 24px rgba(var(--blackrgb), 0.2); /* Enhanced shadow */
+    border-color: rgba(var(--orangergb), 0.3); /* Orange border hint */
+  }
+  
+  /* Remove default link styling and make it fill the card */
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    /* Use flexbox to manage image and content layout */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Image container with consistent sizing */
+  .card-image {
+    width: 100%;
+    height: 200px; /* Fixed height for consistency */
+    overflow: hidden;
+    flex-shrink: 0; /* Prevents image from shrinking */
+  }
+  
+  /* Image styling with object-fit for consistent aspect ratios */
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crops image to fit container while maintaining aspect ratio */
+    object-position: center; /* Centers the image within the container */
+    transition: transform 0.2s ease; /* Smooth zoom effect on hover */
+  }
+  
+  /* Zoom effect on image hover */
+  .event-card:hover .card-image img {
+    transform: scale(1.05); /* Slight zoom in */
+  }
+  
+  /* Card content section */
+  .card-content {
+    padding: 1.5rem; /* Internal padding for content */
+    flex-grow: 1; /* Takes up remaining space in flex container */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Consistent spacing between content elements */
+  }
+  
+  /* Card title styling */
+  .card-title {
+    font-size: 1.25rem; /* Larger than body text but smaller than main page title */
+    font-weight: 600; /* Semi-bold */
+    color: var(--white); /* White text */
+    margin: 0; /* Remove default margin */
+    line-height: 1.3; /* Tight line height for better readability */
+    /* Ensure long titles don't break the layout */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Meta information container */
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    gap: 1rem; /* Space between each meta item */
+    font-size: 0.85rem; /* Smaller than body text */
+    color: var(--platinum); /* Light gray color for less prominence */
+  }
+  
+  /* Individual meta items styling */
+  .card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* Small space between emoji and text */
+    white-space: nowrap; /* Prevents awkward line breaks */
+  }
+  
+  /* Quote styling within cards */
+  .card-quote {
+    font-style: italic;
+    font-size: 0.95rem; /* Slightly smaller than full page quotes */
+    color: var(--platinum); /* Light gray color */
+    margin: 0; /* Remove default blockquote margin */
+    padding: 0.75rem 1rem; /* Smaller padding than full page */
+    border-left: 3px solid var(--orange); /* Orange accent border */
+    background-color: rgba(var(--whitergb), 0.03); /* Very subtle background */
+    border-radius: 0 4px 4px 0; /* Rounded corners except top-left */
+  }
+  
+  /* Summary text styling */
+  .card-summary {
+    font-size: 0.95rem; /* Slightly smaller than full page summary */
+    line-height: 1.5; /* Good readability */
+    color: var(--white); /* White text */
+    margin: 0; /* Remove default paragraph margin */
+    /* Ensure text doesn't overflow the card */
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Responsive design for smaller screens */
+  @media (max-width: 768px) {
+    .card-image {
+      height: 150px; /* Smaller images on mobile */
+    }
+    
+    .card-content {
+      padding: 1rem; /* Less padding on mobile */
+    }
+    
+    .card-title {
+      font-size: 1.1rem; /* Smaller title on mobile */
+    }
+    
+    .card-meta {
+      font-size: 0.8rem; /* Smaller meta text on mobile */
+      gap: 0.5rem; /* Less gap on mobile */
+    }
+  }
+</style>
