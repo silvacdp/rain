@@ -92,13 +92,24 @@ const eventsDataForJS = JSON.stringify(allEvents);
     </section>
     
     <!-- Events grid container -->
-    <section class="events-section">
-      <div id="events-grid" class="events-grid">
-        {/* We'll populate this with JavaScript, but include all events for non-JS users */}
-        {allEvents.map(event => (
-          <EventCard event={event} showFullSummary={false} />
-        ))}
+<section class="events-section">
+  <div id="events-grid" class="events-grid">
+    {/* Render all events server-side with data attributes for filtering */}
+    {allEvents.map(event => (
+      <div 
+        class="event-wrapper"
+        data-category={event.category || ''}
+        data-title={event.title || ''}
+        data-summary={event.summary || ''}
+        data-location={event.location || ''}
+        data-quote={event.quote || ''}
+        data-start-date={event.startDate || ''}
+        data-search-text={`${event.title || ''} ${event.summary || ''} ${event.location || ''} ${event.category || ''} ${event.quote || ''}`.toLowerCase()}
+      >
+        <EventCard event={event} showFullSummary={false} />
       </div>
+    ))}
+  </div>
       
       <!-- Loading message (shown during filtering) -->
       <div id="loading-message" class="loading-message" style="display: none;">
@@ -142,7 +153,17 @@ const eventsDataForJS = JSON.stringify(allEvents);
     padding: 0 1rem 2rem; /* Top: 0, sides: 1rem, bottom: 2rem */
     color: var(--white); /* White text using your color variable */
   }
-  
+
+/* Event wrapper styling for JavaScript filtering */
+.event-wrapper {
+  /* No additional styling needed - the EventCard handles all the styling */
+}
+
+/* Hide event wrappers by default until JavaScript loads */
+.event-wrapper {
+  display: block;
+}
+
   /* Page header styling */
   .page-header {
     margin-bottom: 2rem; /* Space below header */
@@ -516,8 +537,7 @@ const eventsDataForJS = JSON.stringify(allEvents);
   // Client-side JavaScript for filtering, sorting, and pagination
   // This runs after the page loads and provides interactive functionality
   
-  // FIXED: Get all the events data from the server (properly serialized)
-  // This is the key fix - we now properly pass data from Astro to JavaScript
+  // Get all events data from the hidden script tag
   const allEventsData = JSON.parse(document.getElementById('events-data').textContent);
   
   // Configuration for pagination
@@ -525,176 +545,81 @@ const eventsDataForJS = JSON.stringify(allEvents);
   
   // Global state for filtering and pagination
   let currentPage = 1;
-  let filteredEvents = [...allEventsData]; // Start with all events
+  let filteredEventElements = []; // Store filtered DOM elements
   let currentFilters = {
     sort: 'newest',
     category: '',
-    search: '' // New: search filter
+    search: ''
   };
   
-  // Category colors for placeholder images
-  const categoryColors = {
-    'Rain/Flood': '#3B82F6', // Blue
-    'Heatwave': '#F97316', // Orange
-    'Wildfire': '#EF4444', // Red
-    'Other': '#6B7280' // Gray
-  };
+  // Get all event wrapper elements
+  const allEventWrappers = Array.from(document.querySelectorAll('.event-wrapper'));
   
-  // Function to get category icon (same as EventCard.astro)
-  function getCategoryIcon(category) {
-    switch (category) {
-      case 'Rain/Flood':
-        return '🌧️';
-      case 'Heatwave':
-        return '🌡️';
-      case 'Wildfire':
-        return '🔥';
-      case 'Other':
-        return '⚠️';
-      default:
-        return '🌍';
-    }
+  // Function to search events based on search term
+  function matchesSearch(wrapper, searchTerm) {
+    if (!searchTerm.trim()) return true;
+    
+    const searchText = wrapper.dataset.searchText || '';
+    return searchText.includes(searchTerm.toLowerCase().trim());
   }
   
-  // Function to format date ranges (same as EventCard.astro)
-  function formatDateRange(startDate, endDate) {
-    if (!startDate) return '';
-    
-    const start = new Date(startDate);
-    const startOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    
-    if (!endDate) {
-      return start.toLocaleDateString('en-US', startOptions);
-    }
-    
-    const end = new Date(endDate);
-    
-    // Same month and year - show "Month 1-5, Year"
-    if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
-      return `${start.toLocaleDateString('en-US', { month: 'long' })} ${start.getDate()}-${end.getDate()}, ${start.getFullYear()}`;
-    }
-    
-    // Same year - show "Month 1 - Month 5, Year"
-    if (start.getFullYear() === end.getFullYear()) {
-      return `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, ${start.getFullYear()}`;
-    }
-    
-    // Different years - show full dates
-    return `${start.toLocaleDateString('en-US', startOptions)} - ${end.toLocaleDateString('en-US', startOptions)}`;
+  // Function to match category filter
+  function matchesCategory(wrapper, category) {
+    if (!category) return true;
+    return wrapper.dataset.category === category;
   }
   
-  // Function to truncate text for card summaries
-  function truncateText(text, maxLength = 150) {
-    if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
-  }
-  
-  // Function to create a placeholder image for events without images
-  function createPlaceholderImage(category) {
-    const color = categoryColors[category] || categoryColors['Other'];
-    const icon = getCategoryIcon(category);
-    
-    return `
-      <div class="placeholder-image" style="background-color: ${color}; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 3rem; border-radius: 8px;">
-        ${icon}
-      </div>
-    `;
-  }
-  
-  // Function to create HTML for a single event card
-  function createEventCardHTML(event) {
-    const formattedDate = formatDateRange(event.startDate, event.endDate);
-    const displaySummary = truncateText(event.summary);
-    
-    return `
-      <article class="event-card">
-        <a href="/events/${event.slug}" class="card-link">
-          <div class="card-image">
-            ${event.imageUrl ? 
-              `<img src="${event.imageUrl}" alt="${event.title || 'Event image'}" loading="lazy" />` : 
-              createPlaceholderImage(event.category)
-            }
-          </div>
-          <div class="card-content">
-            <h3 class="card-title">${event.title || 'Untitled Event'}</h3>
-            <div class="card-meta">
-              ${formattedDate ? `<span class="card-date">📅 ${formattedDate}</span>` : ''}
-              ${event.location ? `<span class="card-location">🌍 ${event.location}</span>` : ''}
-              ${event.category ? `<span class="card-category">${getCategoryIcon(event.category)} ${event.category}</span>` : ''}
-            </div>
-            ${event.quote ? `<blockquote class="card-quote">"${event.quote}"</blockquote>` : ''}
-            ${displaySummary ? `<p class="card-summary">${displaySummary}</p>` : ''}
-          </div>
-        </a>
-      </article>
-    `;
-  }
-  
-  // Function to sort events based on selected option
-  function sortEvents(events, sortOption) {
-    const sortedEvents = [...events];
+  // Function to sort event wrapper elements
+  function sortEventWrappers(wrappers, sortOption) {
+    const sortedWrappers = [...wrappers];
     
     switch (sortOption) {
       case 'newest':
-        // Sort by start date, newest first
-        return sortedEvents.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+        return sortedWrappers.sort((a, b) => {
+          const dateA = new Date(a.dataset.startDate || 0);
+          const dateB = new Date(b.dataset.startDate || 0);
+          return dateB - dateA;
+        });
       case 'oldest':
-        // Sort by start date, oldest first
-        return sortedEvents.sort((a, b) => new Date(a.startDate || 0) - new Date(b.startDate || 0));
+        return sortedWrappers.sort((a, b) => {
+          const dateA = new Date(a.dataset.startDate || 0);
+          const dateB = new Date(b.dataset.startDate || 0);
+          return dateA - dateB;
+        });
       case 'a-z':
-        // Sort alphabetically by title
-        return sortedEvents.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        return sortedWrappers.sort((a, b) => {
+          const titleA = a.dataset.title || '';
+          const titleB = b.dataset.title || '';
+          return titleA.localeCompare(titleB);
+        });
       case 'z-a':
-        // Sort reverse alphabetically by title
-        return sortedEvents.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        return sortedWrappers.sort((a, b) => {
+          const titleA = a.dataset.title || '';
+          const titleB = b.dataset.title || '';
+          return titleB.localeCompare(titleA);
+        });
       default:
-        return sortedEvents;
+        return sortedWrappers;
     }
   }
   
-  // Function to search events across all text fields
-  function searchEvents(events, searchTerm) {
-    if (!searchTerm.trim()) return events;
-    
-    const term = searchTerm.toLowerCase().trim();
-    
-    return events.filter(event => {
-      // Search through title, summary, location, category, and quote
-      const searchableText = [
-        event.title,
-        event.summary,
-        event.location,
-        event.category,
-        event.quote
-      ].filter(Boolean).join(' ').toLowerCase();
-      
-      return searchableText.includes(term);
+  // Function to filter and sort events
+  function filterAndSortEvents() {
+    // Filter events based on current filters
+    let filtered = allEventWrappers.filter(wrapper => {
+      return matchesSearch(wrapper, currentFilters.search) && 
+             matchesCategory(wrapper, currentFilters.category);
     });
-  }
-  
-  // Function to filter events based on selected criteria
-  function filterEvents() {
-    let filtered = [...allEventsData];
     
-    // Apply search filter first (most restrictive)
-    if (currentFilters.search) {
-      filtered = searchEvents(filtered, currentFilters.search);
-    }
-    
-    // Apply category filter if selected
-    if (currentFilters.category) {
-      filtered = filtered.filter(event => event.category === currentFilters.category);
-    }
-    
-    // Apply sorting last
-    filtered = sortEvents(filtered, currentFilters.sort);
+    // Sort the filtered events
+    filtered = sortEventWrappers(filtered, currentFilters.sort);
     
     return filtered;
   }
   
   // Function to update the events display
   function updateEventsDisplay() {
-    // Show loading message briefly for better UX
+    // Show loading message briefly
     document.getElementById('loading-message').style.display = 'block';
     document.getElementById('events-grid').style.display = 'none';
     document.getElementById('no-results').style.display = 'none';
@@ -702,24 +627,30 @@ const eventsDataForJS = JSON.stringify(allEvents);
     // Use setTimeout to prevent blocking the UI
     setTimeout(() => {
       // Filter and sort events
-      filteredEvents = filterEvents();
+      filteredEventElements = filterAndSortEvents();
       
       // Update results counter
       const resultsCount = document.getElementById('results-count');
       const searchTerm = currentFilters.search;
       const categoryFilter = currentFilters.category;
       
-      let statusText = `Showing ${filteredEvents.length} events`;
+      let statusText = `Showing ${filteredEventElements.length} events`;
       if (searchTerm || categoryFilter) {
         statusText += ' (filtered)';
       }
       resultsCount.textContent = statusText;
       
       // Check if we have any results
-      if (filteredEvents.length === 0) {
+      if (filteredEventElements.length === 0) {
         document.getElementById('loading-message').style.display = 'none';
-        document.getElementById('events-grid').style.display = 'none';
+        document.getElementById('events-grid').style.display = 'grid';
         document.getElementById('no-results').style.display = 'block';
+        
+        // Hide all event wrappers
+        allEventWrappers.forEach(wrapper => {
+          wrapper.style.display = 'none';
+        });
+        
         updatePagination();
         return;
       }
@@ -742,13 +673,17 @@ const eventsDataForJS = JSON.stringify(allEvents);
   function displayCurrentPage() {
     const startIndex = (currentPage - 1) * EVENTS_PER_PAGE;
     const endIndex = startIndex + EVENTS_PER_PAGE;
-    const pageEvents = filteredEvents.slice(startIndex, endIndex);
+    const pageEvents = filteredEventElements.slice(startIndex, endIndex);
     
-    // Generate HTML for current page events
-    const eventsHTML = pageEvents.map(event => createEventCardHTML(event)).join('');
+    // Hide all event wrappers first
+    allEventWrappers.forEach(wrapper => {
+      wrapper.style.display = 'none';
+    });
     
-    // Update the events grid
-    document.getElementById('events-grid').innerHTML = eventsHTML;
+    // Show only the events for this page
+    pageEvents.forEach(wrapper => {
+      wrapper.style.display = 'block';
+    });
     
     // Scroll to top of events section smoothly
     document.querySelector('.events-section').scrollIntoView({ 
@@ -759,10 +694,10 @@ const eventsDataForJS = JSON.stringify(allEvents);
   
   // Function to update pagination controls
   function updatePagination() {
-    const totalPages = Math.ceil(filteredEvents.length / EVENTS_PER_PAGE);
+    const totalPages = Math.ceil(filteredEventElements.length / EVENTS_PER_PAGE);
     
     // Update page info
-    document.getElementById('page-info').textContent = filteredEvents.length > 0 ? `Page ${currentPage} of ${totalPages}` : 'Page 0 of 0';
+    document.getElementById('page-info').textContent = filteredEventElements.length > 0 ? `Page ${currentPage} of ${totalPages}` : 'Page 0 of 0';
     
     // Update previous/next buttons
     const prevButton = document.getElementById('prev-page');
@@ -861,7 +796,7 @@ const eventsDataForJS = JSON.stringify(allEvents);
     });
     
     document.getElementById('next-page').addEventListener('click', function() {
-      const totalPages = Math.ceil(filteredEvents.length / EVENTS_PER_PAGE);
+      const totalPages = Math.ceil(filteredEventElements.length / EVENTS_PER_PAGE);
       if (currentPage < totalPages) {
         currentPage++;
         displayCurrentPage();
@@ -872,5 +807,4 @@ const eventsDataForJS = JSON.stringify(allEvents);
     // Initialize the page with all events
     updateEventsDisplay();
   });
-  
 </script>
