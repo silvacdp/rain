@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import EventCard from '../layouts/EventCard.astro';
 
 // Load events dynamically from Airtable via server-side utility
-import getEvents from '../lib/getEvents.ts';
+import { getEvents } from '../lib/getEvents.ts';
 const events = await getEvents();
 ---
 
