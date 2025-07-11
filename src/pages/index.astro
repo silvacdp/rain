@@ -27,12 +27,17 @@ const featuredEvents = await getEvents({
     
     <!-- Hero/Introduction section -->
     <section class="hero-section">
-      <h1 class="page-title">More Rain</h1>
+      <h1 class="page-title">"More rain fell in 24 hours than in the previous year combined."</h1>
       <p class="hero-description">
-        Tracking floods, storms, and other major climate events around the world. 
-        This site documents significant climate-related events using data from news reports, 
-        social media, and public datasets to help us better understand the increasing 
-        frequency and intensity of extreme weather.
+        Quotes like this one have become all too common in the reporting of climate-related 
+        disasters. Unprecedented levels of rain are happening everywhere around the world, this 
+        site aims to track some of these events. 
+
+        Climate change leads to hotter summers.
+        Hotter summers mean warmer air.
+        Warmer air can hold more moisture.
+        More moisture results in more rain.
+        More rain wreaks havoc all over the globe. 
       </p>
     </section>
     
@@ -117,7 +122,7 @@ const featuredEvents = await getEvents({
   
   /* Main page title */
   .page-title {
-    font-size: 2.5rem; /* Large, prominent title */
+    font-size: 2rem; /* Large, prominent title */
     font-weight: 700; /* Bold */
     color: var(--white); /* White text */
     margin-bottom: 1.5rem; /* Space below title */
@@ -128,7 +133,7 @@ const featuredEvents = await getEvents({
   .hero-description {
     font-size: 1.1rem; /* Slightly larger than body text */
     line-height: 1.6; /* Good readability */
-    color: var(--platinum); /* Light gray for less prominence than title */
+    color: var(--white);
     max-width: 600px; /* Limit line length for better readability */
     margin: 0 auto; /* Center the description */
   }
@@ -158,7 +163,7 @@ const featuredEvents = await getEvents({
   /* Message when no events are available */
   .no-events-message {
     text-align: center;
-    color: var(--platinum); /* Light gray */
+    color: var(--white); 
     font-style: italic;
     padding: 2rem;
     background-color: rgba(var(--whitergb), 0.05); /* Subtle background */
