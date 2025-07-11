@@ -1,102 +1,116 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import EventCard from '../layouts/EventCard.astro';
+
 import { getEvents } from '../lib/getEvents.ts';
 
-// Server-side: fetch all events at once
-const events = await getEvents({ sortDirection: 'desc' });
+const events = await getEvents({
+  sortDirection: 'desc',
+  // Fetch all events, no server-side filters to enable full client filtering
+});
 ---
 
+<!-- Layout + page content -->
 <Layout title="All Events">
   <main class="page-container">
     <h2 class="page-title">All Events</h2>
 
     <!-- Filter/Search Form -->
-    <form class="event-filter-form" on:input={handleFilter}>
+    <form class="event-filter-form" on:change="handleFilterChange" on:input="handleFilterChange" on:submit="handleSubmit">
       <input 
-        type="text"
-        id="search"
-        placeholder="Search events..."
+        type="text" 
+        id="search" 
+        name="search" 
+        placeholder="Search events..." 
         aria-label="Search"
       />
-      <select id="category">
+
+      <select id="category" name="category">
         <option value="">All Categories</option>
         <option value="Rain/Flood">Rain/Flood</option>
         <option value="Heatwave">Heatwave</option>
         <option value="Wildfire">Wildfire</option>
         <option value="Other">Other</option>
       </select>
-      <select id="sort">
+
+      <select id="sort" name="sort">
         <option value="desc">Newest First</option>
         <option value="asc">Oldest First</option>
       </select>
     </form>
 
     <!-- Events Grid -->
-    <section id="event-grid" class="event-grid">
+    <section id="eventsGrid" class="event-grid">
       {events.map(event => (
-        <EventCard event={event} showFullSummary={false} client:only />
+        <EventCard event={event} showFullSummary={false} />
       ))}
     </section>
   </main>
 </Layout>
 
 <script type="module">
-  // Attach once DOM is ready
-  window.addEventListener('DOMContentLoaded', () => {
-    const allEvents = JSON.parse({JSON.stringify(events)});
-    const grid = document.getElementById('event-grid');
-    const searchInput = document.getElementById('search');
-    const categorySelect = document.getElementById('category');
-    const sortSelect = document.getElementById('sort');
+// Get all events from server-side as JSON string, then parse for client use
+const allEvents = JSON.parse(`{JSON.stringify(events)}`);
 
-    function filterEvents() {
-      const search = searchInput.value.toLowerCase();
-      const category = categorySelect.value;
-      const sort = sortSelect.value;
+// Cache references to form controls and events container
+const searchInput = document.getElementById('search');
+const categorySelect = document.getElementById('category');
+const sortSelect = document.getElementById('sort');
+const eventsGrid = document.getElementById('eventsGrid');
 
-      let filtered = [...allEvents];
+// Listen for input and change on form elements to filter & sort dynamically
+document.querySelector('.event-filter-form').addEventListener('input', updateEvents);
+document.querySelector('.event-filter-form').addEventListener('change', updateEvents);
 
-      if (search) {
-        filtered = filtered.filter(e =>
-          [e.title, e.summary, e.quote].join(' ').toLowerCase().includes(search)
-        );
-      }
+// Prevent form submit from reloading page
+document.querySelector('.event-filter-form').addEventListener('submit', e => e.preventDefault());
 
-      if (category) {
-        filtered = filtered.filter(e => e.category === category);
-      }
+function updateEvents() {
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const category = categorySelect.value;
+  const sortDirection = sortSelect.value;
 
-      filtered.sort((a, b) => {
-        const dateA = new Date(a.startDate);
-        const dateB = new Date(b.startDate);
-        return sort === 'asc' ? dateA - dateB : dateB - dateA;
-      });
-
-      grid.innerHTML = '';
-      for (const e of filtered) {
-        const card = document.createElement('div');
-        card.innerHTML = `
-          ${Astro.renderToString(<EventCard event={e} showFullSummary={false} />)}
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    searchInput.addEventListener('input', filterEvents);
-    categorySelect.addEventListener('change', filterEvents);
-    sortSelect.addEventListener('change', filterEvents);
-    filterEvents();
+  // Filter events by search and category
+  let filtered = allEvents.filter(event => {
+    const searchable = (event.title + ' ' + (event.summary || '') + ' ' + (event.quote || '')).toLowerCase();
+    const matchesSearch = !searchTerm || searchable.includes(searchTerm);
+    const matchesCategory = !category || event.category === category;
+    return matchesSearch && matchesCategory;
   });
+
+  // Sort filtered events by startDate
+  filtered.sort((a, b) => {
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
+    return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+  });
+
+  // Clear existing events in the grid
+  eventsGrid.innerHTML = '';
+
+  // Render filtered and sorted events using EventCard component HTML (simplified rendering here)
+  filtered.forEach(event => {
+    // Create a temporary element to hold rendered EventCard HTML
+    // This assumes EventCard supports hydration or server-rendered HTML injection.
+    // If not, you’ll need to manually replicate EventCard's markup here or use a client framework.
+    const eventCard = document.createElement('astro-island');
+    eventCard.setAttribute('component', '../layouts/EventCard.astro');
+    eventCard.event = event;
+    eventCard.showFullSummary = false;
+    eventsGrid.appendChild(eventCard);
+  });
+}
 </script>
 
 <style>
+  /* Main page container */
   .page-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
   }
 
+  /* Page title styling */
   .page-title {
     font-size: 2rem;
     margin-bottom: 1.5rem;
@@ -104,6 +118,7 @@ const events = await getEvents({ sortDirection: 'desc' });
     color: var(--white);
   }
 
+  /* Grid layout for events */
   .event-grid {
     display: grid;
     gap: 2rem;
@@ -121,14 +136,13 @@ const events = await getEvents({ sortDirection: 'desc' });
   .event-filter-form input,
   .event-filter-form select {
     padding: 0.5rem;
-    background-color: var(--black);
+    background-color: rgba(var(--whitergb), 0.05);
     color: var(--white);
     border: 1px solid rgba(var(--whitergb), 0.2);
     border-radius: 4px;
   }
 
-  .event-filter-form select option {
-    background-color: var(--black);
-    color: var(--white);
+  .event-filter-form select {
+    color: var(--black); /* dark text on dropdown */
   }
 </style>
