@@ -67,7 +67,11 @@ console.log('Fetched events count:', events.length);
     <option value="asc" selected={sort === 'asc'}>Oldest First</option>
   </select>
 
-  <button type="submit">Apply</button>
+<script>
+  // On any input or select change, submit form automatically
+  const form = document.querySelector('.event-filter-form');
+  form.addEventListener('change', () => form.submit());
+</script>
 </form>
 
     <!-- Events Grid -->
@@ -114,31 +118,22 @@ console.log('Fetched events count:', events.length);
   }
 
   .event-filter-form input,
+.event-filter-form select,
+.event-filter-form button {
+  padding: 0.5rem;
+  background-color: rgba(var(--whitergb), 0.05);
+  color: var(--white);
+  border: 1px solid rgba(var(--whitergb), 0.2);
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
 
+.event-filter-form select:focus,
+.event-filter-form input:focus {
+  outline: none;
+  border-color: rgba(var(--orangergb), 0.7);
+  box-shadow: 0 0 5px rgba(var(--orangergb), 0.5);
+}
 
-  /* For better dropdown readability */
-  .event-filter-form select {
-    background-color: var(--blue);
-    color: var(--white);
-  }
-
-  /* For option text color */
-  .event-filter-form select option {
-    background-color: var(--blue);
-    color: var(--white);
-  }
-
-  .event-filter-form button {
-    padding: 0.5rem;
-    background-color: rgba(var(--whitergb), 0.05);
-    color: var(--white);
-    border: 1px solid rgba(var(--whitergb), 0.2);
-    border-radius: 4px;
-  }
-
-  .event-filter-form button {
-    background-color: rgba(var(--orangergb), 0.2);
-    cursor: pointer;
-  }
 </style>
 
