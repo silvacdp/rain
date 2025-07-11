@@ -132,8 +132,12 @@ const locationIcon = '🌍';
         <!-- Main event image with alt text for accessibility -->
         <img src={event.imageUrl} alt={event.title} />
         {/* Optional image source attribution - only shows if imageSource field has data */}
-        {event.imageSource && <p class="image-source">Source: {event.imageSource}</p>}
-      </div>
+        {event.imageSource && (
+        <p class="image-source">
+        <a href={event.imageSource} target="_blank" rel="noopener noreferrer">Image Source</a>
+        </p>
+    )}
+    </div>
     )}
 
     <!-- Quote section - displays an impactful quote from news coverage if available -->
