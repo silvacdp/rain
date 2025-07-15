@@ -162,25 +162,30 @@ const locationIcon = '🌍';
         
 <!-- Links section showing as many links as needed -->
 {event.links && (
-<div class="event-links">
-  <strong>Sources:</strong>
-  <div class="links-list">
-    {event.links
-      .split('\n') // Split on newline instead of comma
-      .map((link: string, index: number, arr: string[]) => {
-        const cleanLink = cleanUrl(link); // Remove angle brackets and whitespace
-        return (
-          <span class="source-item">
-            <a href={cleanLink} target="_blank" rel="noopener noreferrer">
-              Source {index + 1}
-            </a>
-            {index < arr.length - 1 && <span class="separator"> / </span>}
-          </span>
-        );
-      })}
+  <div class="event-links">
+    <strong>Sources:</strong>
+    <div class="links-list">
+      {event.links
+        .split('\n')                       // Split links by newline
+        .map(link => link.trim())         // Trim whitespace from each line
+        .filter(link => link.length > 0)  // Remove any empty lines
+        .map((link: string, index: number, arr: string[]) => {
+          const cleanLink = cleanUrl(link);
+          return (
+            <span class="source-item">
+              <a href={cleanLink} target="_blank" rel="noopener noreferrer">
+                Source {index + 1}
+              </a>
+              {index < arr.length - 1 && (
+                <span class="separator">/</span>
+              )}
+            </span>
+          );
+        })}
+    </div>
   </div>
-</div>
-  )}
+)}
+
       </footer>
     )}
   </article>
@@ -285,9 +290,10 @@ const locationIcon = '🌍';
 }
 
 .separator {
-  color: var(--white); /* Or match text color */
-  margin: 0 0.25rem;
+  color: var(--white);
+  margin: 0 0.3rem; /* space before and after the slash */
 }
+
 
 
 
