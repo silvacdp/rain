@@ -134,40 +134,52 @@ function truncateText(text, maxLength = 150) {
   return text.substring(0, maxLength).trim() + '...';
 }
 
-// Function to create EventCard HTML (replicates your EventCard component)
+// ⚠️ NOTE: Th HTML structure below mirrors EventCard.astro ⚠️
+// If you change that component's layout or classes, update this to match
+// this is because the EventCard.astro does server-side filtering, 
+// but this sort/filter/search ability is using client-side filtering (so it doesn't have to reload the page)
+
 function createEventCardHTML(event) {
-  const slug = createSlug(event.title);
+  // Create a slug if not already present (safety fallback)
+  const slug = event.slug || createSlug(event.title);
+
+  // Format date using the same logic from your component
   const formattedDate = formatDateRange(event.startDate, event.endDate);
-  const displaySummary = event.summary ? truncateText(event.summary) : '';
-  
+
+  // Decide whether to show full summary or truncate it
+  const displaySummary = event.summary
+    ? truncateText(event.summary, 150)
+    : '';
+
   return `
     <article class="event-card">
       <a href="/events/${slug}" class="card-link">
+
         ${event.imageUrl ? `
           <div class="card-image">
             <img 
               src="${event.imageUrl}" 
-              alt="${event.title}"
+              alt="${event.title}" 
               loading="lazy"
             />
           </div>
         ` : ''}
-        
+
         <div class="card-content">
           <h3 class="card-title">${event.title}</h3>
-          
+
           <div class="card-meta">
             ${formattedDate ? `<span class="card-date">📅 ${formattedDate}</span>` : ''}
             ${event.location ? `<span class="card-location">🌍 ${event.location}</span>` : ''}
             ${event.category ? `<span class="card-category">${getCategoryIcon(event.category)} ${event.category}</span>` : ''}
           </div>
-          
+
           ${event.quote ? `
             <blockquote class="card-quote">
               "${event.quote}"
             </blockquote>
           ` : ''}
-          
+
           ${displaySummary ? `
             <p class="card-summary">${displaySummary}</p>
           ` : ''}
@@ -176,6 +188,9 @@ function createEventCardHTML(event) {
     </article>
   `;
 }
+
+
+
 
 // Main function to update events based on filters
 function updateEvents() {
@@ -227,7 +242,9 @@ function updateEvents() {
 </script>
 
 <!-- Hidden script tag to pass events data to JavaScript -->
-<script type="application/json" id="eventsData" set:html={JSON.stringify(events)}></script>
+<script type="application/json" id="eventsData">
+  {JSON.stringify(events)}
+</script>
 
 <style>
   /* Main page container */
