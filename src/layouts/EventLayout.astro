@@ -26,8 +26,6 @@ function getCategoryIcon(category: string): string {
   }
 }
 
-
-
 // Function to clean URLs by removing angle brackets and whitespace
 // Airtable sometimes wraps URLs in < > brackets which breaks the links
 function cleanUrl(url: string): string {
@@ -160,38 +158,31 @@ const locationIcon = '🌍';
         {/* Tags - keywords/categories for the event */}
         {displayTags && <p><strong>Tags:</strong> {displayTags}</p>}
         
-<!-- Links section showing as many links as needed -->
-{event.links && (
-  <div class="event-links">
-    <strong>Sources:</strong>
-    <div class="links-list">
-      {event.links
-  .split('\n')
-  .map(link => link.trim())
-  .filter(link => link.length > 0)
-  .map((link: string, index: number, arr: string[]) => {
-    const cleanLink = cleanUrl(link);
-    return (
-      <>
-      <span class="source-item">
-        <a href={cleanLink} target="_blank" rel="noopener noreferrer">
-          Source {index + 1}
-        </a>
-        {index < arr.length - 1 && (
-          <span class="separator"> / </span>
+        <!-- Links section showing as many links as needed -->
+        {event.links && (
+          <div class="event-links">
+            <strong>Sources:</strong>
+            <div class="links-list">
+              {event.links
+                .split('\n')
+                .map(link => link.trim())
+                .filter(link => link.length > 0)
+                .map((link: string, index: number, arr: string[]) => {
+                  const cleanLink = cleanUrl(link);
+                  return (
+                    <span class="source-item" style="white-space: nowrap;">
+                      <a href={cleanLink} target="_blank" rel="noopener noreferrer">
+                        Source {index + 1}
+                      </a>
+                      {index < arr.length - 1 && (
+                        <span class="separator"> / </span>
+                      )}
+                    </span>
+                  );
+                })}
+            </div>
+          </div>
         )}
-      </span>
-
-        {index < arr.length - 1 && (
-          <span class="separator"> / </span>
-        )}
-      </>
-    );
-  })}
-
-    </div>
-  </div>
-)}
 
       </footer>
     )}
@@ -279,31 +270,31 @@ const locationIcon = '🌍';
     color: var(--white); /* White text */
   }
 
-.event-links {
-  margin-top: 1rem; /* Adds space between the "Sources:" label and the links */
-}
+  .event-links {
+    margin-top: 1rem; /* Adds space between the "Sources:" label and the links */
+  }
 
-.links-list {
-  display: inline; /* Keeps items inline */
-}
+  .links-list {
+    display: inline; /* Keeps items inline */
+  }
 
-.source-item {
-  display: inline;
-}
+  .source-item {
+    display: inline;
+  }
 
-.links-list a {
-  text-decoration: underline;
-  color: var(--orange); /* Customize as needed */
-}
+  .links-list a {
+    text-decoration: underline;
+    color: var(--orange); /* Customize as needed */
+  }
 
-.separator {
-  color: var(--white);
-  margin: 0 0.3rem; /* space before and after the slash */
-}
-
+  .separator {
+    color: var(--white);
+    margin: 0 0.3rem; /* space before and after the slash */
+  }
 
   /* Footer section with additional details */
-.event-footer {
+  .event-footer {
     margin-top: 2rem; /* Space above footer */
-    padding-top: 2rem
-}
+    padding-top: 2rem;
+  }
+</style>
