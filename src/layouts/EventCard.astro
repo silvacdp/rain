@@ -89,7 +89,7 @@ const formattedDate = formatDateRange(event.startDate, event.endDate);
 const locationIcon = '🌍';
 
 // Determine what summary text to show based on showFullSummary prop
-const displaySummary = showFullSummary ? event.summary : (event.summary ? truncateText(event.summary) : '');
+const displaySummary = showFullSummary ? event.summary : (event.summary ? truncateText(event.summary, 150) : '');
 ---
 
 <!-- Event card container - this is a clickable link to the full event page -->
