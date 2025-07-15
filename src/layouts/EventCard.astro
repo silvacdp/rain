@@ -23,7 +23,7 @@ interface Props {
 }
 
 // Extract props with default values
-const { event, showFullSummary = true } = Astro.props;
+const { event, showFullSummary = false } = Astro.props;
 
 // Function to get the appropriate icon for each event category
 // This matches your exact Airtable category values
@@ -89,7 +89,7 @@ const formattedDate = formatDateRange(event.startDate, event.endDate);
 const locationIcon = '🌍';
 
 // Determine what summary text to show based on showFullSummary prop
-const displaySummary = showFullSummary ? event.summary : (event.summary ? truncateText(event.summary, 150) : '');
+const displaySummary = showFullSummary ? event.summary : (event.summary ? truncateText(event.summary) : '');
 ---
 
 <!-- Event card container - this is a clickable link to the full event page -->
