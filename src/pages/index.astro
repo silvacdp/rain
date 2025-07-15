@@ -35,7 +35,7 @@ const featuredEvents = await getEvents({
         <div class="events-grid">
           {/* Loop through each featured event and create a card */}
           {featuredEvents.map(event => (
-            <EventCard event={event} showFullSummary={true} />
+            <EventCard event={event} showFullSummary={false} />
           ))}
         </div>
       ) : (
