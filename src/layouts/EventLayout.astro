@@ -168,17 +168,17 @@ const locationIcon = '🌍';
       {event.links
         .split(',')
         .map((link: string, index: number, arr: string[]) => (
-          <>
+          <span class="source-item">
             <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
               Source {index + 1}
             </a>
-            {/* Add slash separator between items except after the last one */}
             {index < arr.length - 1 && <span class="separator"> / </span>}
-          </>
+          </span>
         ))}
     </div>
   </div>
 )}
+
 
       </footer>
     )}
@@ -267,22 +267,27 @@ const locationIcon = '🌍';
   }
 
 .event-links {
-    margin-top: 1rem; /* adds space above the source block */
-  }
+  margin-top: 1rem; /* Adds space between the "Sources:" label and the links */
+}
 
- .links-list {
-    display: inline; /* keeps it inline with slashes */
-  }
+.links-list {
+  display: inline; /* Keeps items inline */
+}
 
-  .links-list a {
-    text-decoration: underline;
-    color: var(--orange); /* or your preferred color */
-  }
+.source-item {
+  display: inline;
+}
 
-  .separator {
-    margin: 0 0.25rem;
-    color: var(--white); /* optional: same as text color */
-  }
+.links-list a {
+  text-decoration: underline;
+  color: var(--orange); /* Customize as needed */
+}
+
+.separator {
+  color: var(--white); /* Or match text color */
+  margin: 0 0.25rem;
+}
+
 
 
   /* Footer section with additional details */
