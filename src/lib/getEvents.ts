@@ -1,7 +1,7 @@
 // src/utils/getEvents.ts
 
 export async function getEvents({
-  sortField = 'Start Date', // default sort
+  sortField = 'Start Date',
   sortDirection = 'desc',
   maxRecords,
   filters = '',
@@ -12,7 +12,7 @@ export async function getEvents({
 
   const encodedTableName = encodeURIComponent(tableName);
 
-  // Build query params dynamically
+  // Build Airtable query string
   const params = new URLSearchParams();
   params.append('sort[0][field]', sortField);
   params.append('sort[0][direction]', sortDirection);
@@ -34,46 +34,44 @@ export async function getEvents({
 
   const data = await res.json();
 
-  
-// Temporary debug: check for any events without valid slugs
-for (const record of data.records) {
-  const title = record.fields.Title;
-  const slug = title
-    ?.toLowerCase()
-    ?.replace(/\s+/g, '-')
-    ?.replace(/[^a-z0-9-]/g, '')
-    ?.replace(/--+/g, '-')
-    ?.replace(/^-|-$/g, '');
+  // Process and filter out invalid entries before mapping
+  return data.records
+    .map(record => {
+      const title = record.fields.Title;
+      if (!title) return null;
 
-  if (!title || !slug) {
-    console.warn('Skipping record with missing or invalid title/slug:', record);
-  }
-}
+      // Generate slug from title
+      const slug = title
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-|-$/g, '');
 
-  
-return data.records
-  .filter(record => record.fields.Title) // Remove any without a title
-  .map(record => ({
-    slug: record.fields.Title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, ''),
-    title: record.fields.Title,
-    location: record.fields.Location,
-    startDate: record.fields['Start Date'],
-    endDate: record.fields['End Date'],
-    category: record.fields.Category,
-    tags: record.fields.Tags,
-    quote: record.fields.Quote,
-    summary: record.fields.Summary,
-    imageUrl: record.fields['Image URL'],
-    imageSource: record.fields['Image Source'],
-    links: record.fields.Links,
-    published: record.fields.Published,
-    misc: record.fields.Misc,
-    created: record.fields.Created,
-  }));
+      // Skip if slug is invalid
+      if (!slug) {
+        console.warn('Skipping record with invalid slug:', { id: record.id, title });
+        return null;
+      }
 
+      // Return the cleaned event object
+      return {
+        slug,
+        title,
+        location: record.fields.Location,
+        startDate: record.fields['Start Date'],
+        endDate: record.fields['End Date'],
+        category: record.fields.Category,
+        tags: record.fields.Tags,
+        quote: record.fields.Quote,
+        summary: record.fields.Summary,
+        imageUrl: record.fields['Image URL'],
+        imageSource: record.fields['Image Source'],
+        links: record.fields.Links,
+        published: record.fields.Published,
+        misc: record.fields.Misc,
+        created: record.fields.Created,
+      };
+    })
+    .filter(Boolean); // Remove nulls (i.e. skipped records)
 }
