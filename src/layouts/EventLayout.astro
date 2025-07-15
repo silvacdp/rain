@@ -173,11 +173,15 @@ const locationIcon = '🌍';
     const cleanLink = cleanUrl(link);
     return (
       <>
-        <span class="source-item">
-          <a href={cleanLink} target="_blank" rel="noopener noreferrer">
-            Source {index + 1}
-          </a>
-        </span>
+      <span class="source-item">
+        <a href={cleanLink} target="_blank" rel="noopener noreferrer">
+          Source {index + 1}
+        </a>
+        {index < arr.length - 1 && (
+          <span class="separator"> / </span>
+        )}
+      </span>
+
         {index < arr.length - 1 && (
           <span class="separator"> / </span>
         )}
@@ -298,9 +302,8 @@ const locationIcon = '🌍';
 }
 
 
-
-
   /* Footer section with additional details */
-  .event-footer {
+.event-footer {
     margin-top: 2rem; /* Space above footer */
     padding-top: 2rem
+}
