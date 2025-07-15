@@ -166,22 +166,25 @@ const locationIcon = '🌍';
     <strong>Sources:</strong>
     <div class="links-list">
       {event.links
-        .split('\n')                       // Split links by newline
-        .map(link => link.trim())         // Trim whitespace from each line
-        .filter(link => link.length > 0)  // Remove any empty lines
-        .map((link: string, index: number, arr: string[]) => {
-          const cleanLink = cleanUrl(link);
-          return (
-            <span class="source-item">
-              <a href={cleanLink} target="_blank" rel="noopener noreferrer">
-                Source {index + 1}
-              </a>
-              {index < arr.length - 1 && (
-                <span class="separator">/</span>
-              )}
-            </span>
-          );
-        })}
+  .split('\n')
+  .map(link => link.trim())
+  .filter(link => link.length > 0)
+  .map((link: string, index: number, arr: string[]) => {
+    const cleanLink = cleanUrl(link);
+    return (
+      <>
+        <span class="source-item">
+          <a href={cleanLink} target="_blank" rel="noopener noreferrer">
+            Source {index + 1}
+          </a>
+        </span>
+        {index < arr.length - 1 && (
+          <span class="separator"> / </span>
+        )}
+      </>
+    );
+  })}
+
     </div>
   </div>
 )}
