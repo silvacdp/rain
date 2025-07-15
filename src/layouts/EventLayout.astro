@@ -160,18 +160,22 @@ const locationIcon = '🌍';
         {/* Tags - keywords/categories for the event */}
         {displayTags && <p><strong>Tags:</strong> {displayTags}</p>}
         
-        {event.links && (
+<!-- Links section showing as many links as needed -->
+{event.links && (
   <div class="event-links">
     <strong>Sources:</strong>
     <div class="links-list">
-      {event.links.match(/<([^>]+)>/g)?.map((link: string, index: number) => {
-        const cleanLink = link.replace(/[<>]/g, '');
-        return (
-          <a href={cleanLink} target="_blank" rel="noopener noreferrer" key={index}>
-            Source {index + 1} →
-          </a>
-        );
-      })}
+      {event.links
+        .split(',')
+        .map((link: string, index: number, arr: string[]) => (
+          <>
+            <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
+              Source {index + 1}
+            </a>
+            {/* Add slash separator between items except after the last one */}
+            {index < arr.length - 1 && <span class="separator"> / </span>}
+          </>
+        ))}
     </div>
   </div>
 )}
@@ -262,11 +266,23 @@ const locationIcon = '🌍';
     color: var(--white); /* White text */
   }
 
-/* Splitting the source links by line */
-.links-list a {
-  display: block;
-  margin-bottom: 0.5rem; /* space between links */
-}
+.event-links {
+    margin-top: 1rem; /* adds space above the source block */
+  }
+
+ .links-list {
+    display: inline; /* keeps it inline with slashes */
+  }
+
+  .links-list a {
+    text-decoration: underline;
+    color: var(--orange); /* or your preferred color */
+  }
+
+  .separator {
+    margin: 0 0.25rem;
+    color: var(--white); /* optional: same as text color */
+  }
 
 
   /* Footer section with additional details */
