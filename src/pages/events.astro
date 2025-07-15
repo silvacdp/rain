@@ -54,6 +54,11 @@ const events = await getEvents({
   </main>
 </Layout>
 
+<!-- Hidden script tag to pass events data to JavaScript -->
+<script type="application/json" id="eventsData">
+  {JSON.stringify(events)}
+</script>
+
 <script>
 // Get all events from server-side - fix the JSON parsing
 const allEvents = JSON.parse(document.getElementById('eventsData').textContent);
@@ -239,11 +244,6 @@ function updateEvents() {
     });
   }
 }
-</script>
-
-<!-- Hidden script tag to pass events data to JavaScript -->
-<script type="application/json" id="eventsData">
-  {JSON.stringify(events)}
 </script>
 
 <style>
