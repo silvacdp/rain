@@ -166,15 +166,23 @@ const locationIcon = '🌍';
     <strong>Sources:</strong>
     <div class="links-list">
       {event.links
-        .split(',')
-        .map((link: string, index: number, arr: string[]) => (
-          <span class="source-item">
-            <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
-              Source {index + 1}
-            </a>
-            {index < arr.length - 1 && <span class="separator"> / </span>}
-          </span>
-        ))}
+  .split(',')
+  .map((link: string, index: number, arr: string[]) => {
+    // Clean and trim each individual link
+    const cleanLink = cleanUrl(link);
+
+    // Return a span with the link and optional separator
+    return (
+      <span class="source-item">
+        <a href={cleanLink} target="_blank" rel="noopener noreferrer">
+          Source {index + 1}
+        </a>
+        {/* Add separator unless it's the last item */}
+        {index < arr.length - 1 && <span class="separator"> / </span>}
+      </span>
+    );
+  })}
+
     </div>
   </div>
 )}
