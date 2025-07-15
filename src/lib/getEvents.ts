@@ -34,13 +34,32 @@ export async function getEvents({
 
   const data = await res.json();
 
-  return data.records.map(record => ({
+  
+// Temporary debug: check for any events without valid slugs
+for (const record of data.records) {
+  const title = record.fields.Title;
+  const slug = title
+    ?.toLowerCase()
+    ?.replace(/\s+/g, '-')
+    ?.replace(/[^a-z0-9-]/g, '')
+    ?.replace(/--+/g, '-')
+    ?.replace(/^-|-$/g, '');
+
+  if (!title || !slug) {
+    console.warn('Skipping record with missing or invalid title/slug:', record);
+  }
+}
+
+  
+return data.records
+  .filter(record => record.fields.Title) // Remove any without a title
+  .map(record => ({
     slug: record.fields.Title
-      ?.toLowerCase()
-      ?.replace(/\s+/g, '-')
-      ?.replace(/[^a-z0-9-]/g, '')
-      ?.replace(/--+/g, '-')
-      ?.replace(/^-|-$/g, ''),
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-|-$/g, ''),
     title: record.fields.Title,
     location: record.fields.Location,
     startDate: record.fields['Start Date'],
@@ -56,4 +75,5 @@ export async function getEvents({
     misc: record.fields.Misc,
     created: record.fields.Created,
   }));
+
 }
