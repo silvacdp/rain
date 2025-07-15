@@ -160,22 +160,22 @@ const locationIcon = '🌍';
         {/* Tags - keywords/categories for the event */}
         {displayTags && <p><strong>Tags:</strong> {displayTags}</p>}
         
-        {/* Source links - automatically handles any number of sources */}
         {event.links && (
-          <div class="event-links">
-            <strong>Sources:</strong>
-            <div class="links-list">
-              {/* Split the links string by commas and create numbered source links */}
-              {/* This automatically handles 1, 2, 3, 4, 5+ sources based on your Airtable data */}
-              {/* Use cleanUrl to remove the angle brackets that Airtable adds around URLs */}
-              {event.links.split(',').map((link: string, index: number) => (
-                <a href={cleanUrl(link)} target="_blank" rel="noopener noreferrer">
-                  Source {index + 1} →
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+  <div class="event-links">
+    <strong>Sources:</strong>
+    <div class="links-list">
+      {event.links.match(/<([^>]+)>/g)?.map((link: string, index: number) => {
+        const cleanLink = link.replace(/[<>]/g, '');
+        return (
+          <a href={cleanLink} target="_blank" rel="noopener noreferrer" key={index}>
+            Source {index + 1} →
+          </a>
+        );
+      })}
+    </div>
+  </div>
+)}
+
       </footer>
     )}
   </article>
